@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "951492782980",
+    "firebase_url": "https://app-on-lease.firebaseio.com",
+    "project_id": "app-on-lease",
+    "storage_bucket": "app-on-lease.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:951492782980:android:0ffae0d48b2d85eb",
+        "android_client_info": {
+          "package_name": "com.loginworks.aol.aol_native"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "951492782980-3unshgn6ioi0tgfv08uojabgfsasgpi8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA212834FInqTTXy-YKQ2nSCpzZcg7ncWM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

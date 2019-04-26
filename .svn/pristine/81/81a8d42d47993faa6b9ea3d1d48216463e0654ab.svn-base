@@ -1,0 +1,40 @@
+package com.loginworks.aol.aol_native.extras;
+
+import android.app.Application;
+import android.content.Context;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
+
+
+public class AppOnLeaseApplication extends Application {
+
+    private static AppOnLeaseApplication mApplication;
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Fabric.with(this, new Crashlytics());
+        mApplication = this;
+
+
+    }
+
+    public static void setErrorDetailEnabled(boolean isEnabled) {
+    }
+
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+    }
+
+
+    public static AppOnLeaseApplication getApplication() {
+        return mApplication;
+    }
+
+    public static Context getApplicationCtx() {
+        return mApplication.getApplicationContext();
+    }
+
+}
+

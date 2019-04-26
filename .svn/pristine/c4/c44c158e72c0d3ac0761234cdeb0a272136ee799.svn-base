@@ -1,0 +1,56 @@
+package com.loginworks.aol.aol_native.fragments;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.loginworks.aol.aol_native.R;
+import com.loginworks.aol.aol_native.activity.DashboardActivity;
+import com.loginworks.aol.aol_native.databasehandler.DataHandlerDB;
+import com.loginworks.aol.aol_native.extras.FragmentsName;
+import com.loginworks.aol.aol_native.utility.Util;
+
+/**
+ * Created by ujjwal on 4/24/2017.
+ */
+
+public class ThankyouFragment extends Fragment {
+
+    private TextView txtOrderId;
+    private Button btnOrderMore;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_thank_you, container, false);
+
+
+        Bundle bundle = getArguments();
+        txtOrderId = (TextView) view.findViewById(R.id.txtOrderId);
+        btnOrderMore = (Button) view.findViewById(R.id.btnOrderMore);
+
+        txtOrderId.setText("Your Order Id is " + bundle.getString("order_id"));
+
+        btnOrderMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Util.getInstance().openFragment(getActivity(), FragmentsName.FRAGMENT_CATEGORIES, FragmentsName.CATEGORIES_ID, null);
+            }
+        });
+
+        DataHandlerDB.getInstance().clearAllTables();
+
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        DashboardActivity.toolbar.setVisibility(View.GONE);
+    }
+}

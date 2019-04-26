@@ -1,0 +1,931 @@
+package com.loginworks.aol.aol_native.models;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
+/**
+ * Created by lw23 on 10-04-2017.
+ */
+
+public class OrderHistory implements Serializable {
+
+    private String orderId;
+    private String orderDate;
+    private String orderTime;
+    private String orderMonth;
+    private String orderStatus;
+    //    private String orderDisplay;
+    private String orderItemTotal;
+    private String orderAmountTotal;
+    private String orderList;
+    private String orderAddressId;
+    private ArrayList<OrderedProducts> orderedProduct;
+    private String orderEmail;
+    private String orderBillerName;
+    private String orderBranchId;
+    private String orderBranchName;
+    private String orderBranchAddress;
+    private String orderInprocessTime;
+    private String orderAcceptance;
+    private String orderOnRoad;
+    private String orderOnRoadTime;
+    private String orderOrderDelivery;
+    private String orderOrderDeliveryTime;
+    private String orderDecline;
+    private String orderPushNotification;
+    private String orderImei;
+    private String orderDiscountAmount;
+    private String orderActualAmount;
+    private String orderCoupanCode;
+    private String orderNewOrderOnMobile;
+    private String orderTaxAmount;
+    private String orderDeliveryPhone;
+    private String orderInstruction;
+    private String orderServiceTaxAmount;
+    private String orderVatAmount;
+    private String orderSurChargeAmount;
+    private String orderTakeAway;
+    private String orderDeliveryCharge;
+    private String orderServiceCharge;
+    private String orderDeclineReason;
+    private String orderPaymentMode;
+    private String orderPAYTMSTATUS;
+    private String orderPAYTMTXNID;
+    private String orderPAYTMORDERID;
+    private String orderPAYTMCURRENCY;
+    private String orderPAYTMBANKTXNID;
+    private String orderPAYTMTXNDATE;
+    private String orderPAYTMBANKNAME;
+    private String orderPAYTMCHECKSUMHASH;
+    private String orderPAYTMMID;
+    private String orderPAYTMRESPCODE;
+    private String orderPAYTMRESPMSG;
+    private String orderPAYTMMODE;
+    private String orderPAYTMTXNAMOUNT;
+    private String errorMessage;
+    private ArrayList<OrderHistory> orderHistoryList;
+
+    public OrderHistory(String orderId, String orderDate, String orderTime, String orderMonth,
+                        String orderStatus, String orderItemTotal, String orderAmountTotal,
+                        String orderlist, String orderAddressId, ArrayList<OrderedProducts> orderedProductList,
+                        String orderEmail, String orderBillerName, String orderBranchId,
+                        String orderBranchName, String orderBranchAddress, String orderInprocessTime,
+                        String orderAcceptance, String orderOnRoad, String orderOnRoadTime,
+                        String orderOrderDelivery, String orderOrderDeliveryTime,
+                        String orderDecline, String orderPushNotification, String orderImei,
+                        String orderDiscountAmount, String orderActualAmount, String orderCoupanCode,
+                        String orderNewOrderOnMobile, String orderTaxAmount, String orderDeliveryPhone,
+                        String orderInstruction, String orderServiceTaxAmount, String orderVatAmount,
+                        String orderSurChargeAmount, String orderTakeAway, String orderDeliveryCharge,
+                        String orderServiceCharge, String orderDeclineReason, String orderPaymentMode,
+                        String orderPAYTMSTATUS, String orderPAYTMTXNID, String orderPAYTMORDERID,
+                        String orderPAYTMCURRENCY, String orderPAYTMBANKTXNID, String orderPAYTMTXNDATE,
+                        String orderPAYTMBANKNAME, String orderPAYTMCHECKSUMHASH, String orderPAYTMMID,
+                        String orderPAYTMRESPCODE, String orderPAYTMRESPMSG, String orderPAYTMMODE,
+                        String orderPAYTMTXNAMOUNT) {
+        this.orderId = orderId;
+        this.orderDate = orderDate;
+        this.orderTime = orderTime;
+        this.orderMonth = orderMonth;
+        this.orderStatus = orderStatus;
+        this.orderItemTotal = orderItemTotal;
+        this.orderAmountTotal = orderAmountTotal;
+        this.orderList = orderlist;
+        this.orderAddressId = orderAddressId;
+        this.orderedProduct = orderedProductList;
+        this.orderEmail = orderEmail;
+        this.orderBillerName = orderBillerName;
+        this.orderBranchId = orderBranchId;
+        this.orderBranchName = orderBranchName;
+        this.orderBranchAddress = orderBranchAddress;
+        this.orderInprocessTime = orderInprocessTime;
+        this.orderAcceptance = orderAcceptance;
+        this.orderOnRoad = orderOnRoad;
+        this.orderOnRoadTime = orderOnRoadTime;
+        this.orderOrderDelivery = orderOrderDelivery;
+        this.orderOrderDeliveryTime = orderOrderDeliveryTime;
+        this.orderDecline = orderDecline;
+        this.orderPushNotification = orderPushNotification;
+        this.orderImei = orderImei;
+        this.orderDiscountAmount = orderDiscountAmount;
+        this.orderActualAmount = orderActualAmount;
+        this.orderCoupanCode = orderCoupanCode;
+        this.orderNewOrderOnMobile = orderNewOrderOnMobile;
+        this.orderTaxAmount = orderTaxAmount;
+        this.orderDeliveryPhone = orderDeliveryPhone;
+        this.orderInstruction = orderInstruction;
+        this.orderServiceTaxAmount = orderServiceTaxAmount;
+        this.orderVatAmount = orderVatAmount;
+        this.orderSurChargeAmount = orderSurChargeAmount;
+        this.orderTakeAway = orderTakeAway;
+        this.orderDeliveryCharge = orderDeliveryCharge;
+        this.orderServiceCharge = orderServiceCharge;
+        this.orderDeclineReason = orderDeclineReason;
+        this.orderPaymentMode = orderPaymentMode;
+        this.orderPAYTMSTATUS = orderPAYTMSTATUS;
+        this.orderPAYTMTXNID = orderPAYTMTXNID;
+        this.orderPAYTMORDERID = orderPAYTMORDERID;
+        this.orderPAYTMCURRENCY = orderPAYTMCURRENCY;
+        this.orderPAYTMBANKTXNID = orderPAYTMBANKTXNID;
+        this.orderPAYTMTXNDATE = orderPAYTMTXNDATE;
+        this.orderPAYTMBANKNAME = orderPAYTMBANKNAME;
+        this.orderPAYTMCHECKSUMHASH = orderPAYTMCHECKSUMHASH;
+        this.orderPAYTMMID = orderPAYTMMID;
+        this.orderPAYTMRESPCODE = orderPAYTMRESPCODE;
+        this.orderPAYTMRESPMSG = orderPAYTMRESPMSG;
+        this.orderPAYTMMODE = orderPAYTMMODE;
+        this.orderPAYTMTXNAMOUNT = orderPAYTMTXNAMOUNT;
+    }
+
+    public OrderHistory(JSONObject jsonObject) {
+        try {
+
+            if (jsonObject.getInt("status") == 1) {
+                orderHistoryList = new ArrayList<>();
+                JSONArray jsonArray = jsonObject.getJSONArray("order_history");
+                if (jsonArray.length() > 0) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jo = jsonArray.getJSONObject(i);
+
+                        OrderedProducts orderedProducts = new OrderedProducts(jo.getJSONArray("products"));
+
+                        OrderHistory orderHistory = new OrderHistory(jo.getString("order_id"),              // orderId;
+                                jo.getString("order_date"),                     // orderDate;
+                                jo.getString("order_time"),                     // orderTime;
+                                jo.getString("month"),                          // orderMonth;
+                                jo.getString("order_status"),                   // orderStatus;
+                                jo.getString("total_item"),                     // orderItemTotal;
+                                jo.getString("total_amount"),                   // orderAmountTotal;
+                                jo.getString("orderlist"),                      // orderlist;
+                                jo.getString("address_id"),                     // orderAddressId;
+                                orderedProducts.getOrderedProductList(),        // orderedProductList;
+                                jo.getString("email"),                          // orderEmail;
+                                jo.getString("biller_name"),                    // orderBillerName;
+                                jo.getString("branch_id"),                      // orderBranchId;
+                                jo.getString("branch_name"),                    // orderBranchName;
+                                jo.getString("branch_address"),                 // orderBranchAddress;
+                                jo.getString("inprocess_time"),                 // orderInprocessTime;
+                                jo.getString("acceptance"),                     // orderAcceptance;
+                                jo.getString("on_road"),                        // orderOnRoad;
+                                jo.getString("onroad_time"),                    // orderOnRoadTime;
+                                jo.getString("delivery"),                       // orderOrderDelivery;
+                                jo.getString("delivery_time"),                  //  orderOrderDeliveryTi
+                                jo.getString("decline"),                        // orderDecline;
+                                jo.getString("push_notification"),              // orderPushNotification
+                                jo.getString("imei"),                           // orderImei;
+                                jo.getString("discounted_amount"),              // orderDiscountAmount;
+                                jo.getString("actual_amount"),                  // orderActualAmount;
+                                jo.getString("coupon_code"),                    // orderCoupanCode;
+                                jo.getString("neworder_on_mobile"),             // orderNewOrderOnMobile
+                                jo.getString("tax_amount"),                     // orderTaxAmount;
+                                jo.getString("delivery_phone"),                 // orderDeliveryPhone;
+                                jo.getString("order_instruction"),              // orderInstruction;
+                                jo.getString("service_tax_amount"),             // orderServiceTaxAmount
+                                jo.getString("vat_amount"),                     // orderVatAmount;
+                                jo.getString("surcharge_amount"),               // orderSurChargeAmount;
+                                jo.getString("take_away"),                      // orderTakeAway;
+                                jo.getString("delivery_charge"),                // orderDeliveryCharge;
+                                jo.getString("service_charge"),                 // orderServiceCharge;
+                                jo.getString("decline_reason"),                 // orderDeclineReason;
+                                jo.getString("payment_mode"),                   // orderPaymentMode;
+                                jo.getString("STATUS"),                         // orderPAYTMSTATUS;
+                                jo.getString("TXNID"),                          // orderPAYTMTXNID;
+                                jo.getString("TXNID"),                          // orderPAYTMORDERID;
+                                jo.getString("CURRENCY"),                       // orderPAYTMCURRENCY;
+                                jo.getString("BANKTXNID"),                      // orderPAYTMBANKTXNID;
+                                jo.getString("TXNDATE"),                        // orderPAYTMTXNDATE;
+                                jo.getString("BANKNAME"),                       // orderPAYTMBANKNAME;
+                                jo.getString("CHECKSUMHASH"),                   // orderPAYTMCHECKSUMHA
+                                jo.getString("MID"),                            // orderPAYTMMID;
+                                jo.getString("RESPCODE"),                       // orderPAYTMRESPCODE;
+                                jo.getString("RESPMSG"),                        // orderPAYTMRESPMSG;
+                                jo.getString("PAYMENTMODE"),                    // orderPAYTMMODE;
+                                jo.getString("TXNAMOUNT"));                     // orderPAYTMTXNAMOUNT;
+
+                        orderHistoryList.add(orderHistory);
+                    }
+                }
+            } else {
+                setErrorMessage(jsonObject.getString("message"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorMessage = "There is some problem in our server. Please try after sone time.";
+        }
+    }
+
+    public String getOrderAddressId() {
+        return orderAddressId;
+    }
+
+    public void setOrderAddressId(String orderAddressId) {
+        this.orderAddressId = orderAddressId;
+    }
+
+    public String getOrderDeliveryPhone() {
+        return orderDeliveryPhone;
+    }
+
+    public void setOrderDeliveryPhone(String orderDeliveryPhone) {
+        this.orderDeliveryPhone = orderDeliveryPhone;
+    }
+
+    public String getOrderBranchAddress() {
+        return orderBranchAddress;
+    }
+
+    public void setOrderBranchAddress(String orderBranchAddress) {
+        this.orderBranchAddress = orderBranchAddress;
+    }
+
+    public String getOrderBranchName() {
+        return orderBranchName;
+    }
+
+    public void setOrderBranchName(String orderBranchName) {
+        this.orderBranchName = orderBranchName;
+    }
+
+    public String getOrderBranchId() {
+        return orderBranchId;
+    }
+
+    public void setOrderBranchId(String orderBranchId) {
+        this.orderBranchId = orderBranchId;
+    }
+
+    public String getOrderBillerName() {
+        return orderBillerName;
+    }
+
+    public void setOrderBillerName(String orderBillerName) {
+        this.orderBillerName = orderBillerName;
+    }
+
+    public ArrayList<OrderedProducts> getOrderedProduct() {
+        return orderedProduct;
+    }
+
+    public void setOrderedProduct(ArrayList<OrderedProducts> orderedProduct) {
+        this.orderedProduct = orderedProduct;
+    }
+
+    public ArrayList<OrderHistory> getOrderHistoryList() {
+        return orderHistoryList;
+    }
+
+    public void setOrderHistoryList(ArrayList<OrderHistory> orderHistoryList) {
+        this.orderHistoryList = orderHistoryList;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(String orderTime) {
+        this.orderTime = orderTime;
+    }
+
+    public String getOrderMonth() {
+        return orderMonth;
+    }
+
+    public void setOrderMonth(String orderMonth) {
+        this.orderMonth = orderMonth;
+    }
+//
+//    public String getOrderDisplay() {
+//        return orderDisplay;
+//    }
+//
+//    public void setOrderDisplay(String orderDisplay) {
+//        this.orderDisplay = orderDisplay;
+//    }
+
+    public String getOrderItemTotal() {
+        return orderItemTotal;
+    }
+
+    public void setOrderItemTotal(String orderItemTotal) {
+        this.orderItemTotal = orderItemTotal;
+    }
+
+    public String getOrderAmountTotal() {
+        return orderAmountTotal;
+    }
+
+    public void setOrderAmountTotal(String orderAmountTotal) {
+        this.orderAmountTotal = orderAmountTotal;
+    }
+
+//    public String getOrderUserId() {
+//        return orderUserId;
+//    }
+//
+//    public void setOrderUserId(String orderUserId) {
+//        this.orderUserId = orderUserId;
+//    }
+
+    public String getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(String orderList) {
+        this.orderList = orderList;
+    }
+
+//    public String getOrderPhone() {
+//        return orderPhone;
+//    }
+//
+//    public void setOrderPhone(String orderPhone) {
+//        this.orderPhone = orderPhone;
+//    }
+
+    public String getOrderEmail() {
+        return orderEmail;
+    }
+
+    public void setOrderEmail(String orderEmail) {
+        this.orderEmail = orderEmail;
+    }
+
+    public String getOrderBillName() {
+        return orderBillerName;
+    }
+
+    public void setOrderBillName(String orderBillName) {
+        this.orderBillerName = orderBillName;
+    }
+
+    public String getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public String getOrderInprocessTime() {
+        return orderInprocessTime;
+    }
+
+    public void setOrderInprocessTime(String orderInprocessTime) {
+        this.orderInprocessTime = orderInprocessTime;
+    }
+
+    public String getOrderAcceptance() {
+        return orderAcceptance;
+    }
+
+    public void setOrderAcceptance(String orderAcceptance) {
+        this.orderAcceptance = orderAcceptance;
+    }
+
+    public String getOrderOnRoad() {
+        return orderOnRoad;
+    }
+
+    public void setOrderOnRoad(String orderOnRoad) {
+        this.orderOnRoad = orderOnRoad;
+    }
+
+    public String getOrderOnRoadTime() {
+        return orderOnRoadTime;
+    }
+
+    public void setOrderOnRoadTime(String orderOnRoadTime) {
+        this.orderOnRoadTime = orderOnRoadTime;
+    }
+
+    public String getOrderOrderDelivery() {
+        return orderOrderDelivery;
+    }
+
+    public void setOrderOrderDelivery(String orderOrderDelivery) {
+        this.orderOrderDelivery = orderOrderDelivery;
+    }
+
+    public String getOrderOrderDeliveryTime() {
+        return orderOrderDeliveryTime;
+    }
+
+    public void setOrderOrderDeliveryTime(String orderOrderDeliveryTime) {
+        this.orderOrderDeliveryTime = orderOrderDeliveryTime;
+    }
+
+    public String getOrderDecline() {
+        return orderDecline;
+    }
+
+    public void setOrderDecline(String orderDecline) {
+        this.orderDecline = orderDecline;
+    }
+
+    public String getOrderPushNotification() {
+        return orderPushNotification;
+    }
+
+    public void setOrderPushNotification(String orderPushNotification) {
+        this.orderPushNotification = orderPushNotification;
+    }
+
+    public String getOrderImei() {
+        return orderImei;
+    }
+
+    public void setOrderImei(String orderImei) {
+        this.orderImei = orderImei;
+    }
+
+    public String getOrderDiscountAmount() {
+        return orderDiscountAmount;
+    }
+
+    public void setOrderDiscountAmount(String orderDiscountAmount) {
+        this.orderDiscountAmount = orderDiscountAmount;
+    }
+
+    public String getOrderActualAmount() {
+        return orderActualAmount;
+    }
+
+    public void setOrderActualAmount(String orderActualAmount) {
+        this.orderActualAmount = orderActualAmount;
+    }
+
+    public String getOrderCoupanCode() {
+        return orderCoupanCode;
+    }
+
+    public void setOrderCoupanCode(String orderCoupanCode) {
+        this.orderCoupanCode = orderCoupanCode;
+    }
+
+    public String getOrderNewOrderOnMobile() {
+        return orderNewOrderOnMobile;
+    }
+
+    public void setOrderNewOrderOnMobile(String orderNewOrderOnMobile) {
+        this.orderNewOrderOnMobile = orderNewOrderOnMobile;
+    }
+
+    public String getOrderTaxAmount() {
+        return orderTaxAmount;
+    }
+
+    public void setOrderTaxAmount(String orderTaxAmount) {
+        this.orderTaxAmount = orderTaxAmount;
+    }
+//
+//    public String getOrderControllerAccepted() {
+//        return orderControllerAccepted;
+//    }
+//
+//    public void setOrderControllerAccepted(String orderControllerAccepted) {
+//        this.orderControllerAccepted = orderControllerAccepted;
+//    }
+//
+//    public String getOrderControllerDeclined() {
+//        return orderControllerDeclined;
+//    }
+//
+//    public void setOrderControllerDeclined(String orderControllerDeclined) {
+//        this.orderControllerDeclined = orderControllerDeclined;
+//    }
+//
+//    public String getOrderControllerOnRoad() {
+//        return orderControllerOnRoad;
+//    }
+//
+//    public void setOrderControllerOnRoad(String orderControllerOnRoad) {
+//        this.orderControllerOnRoad = orderControllerOnRoad;
+//    }
+//
+//    public String getOrderContollerDelivery() {
+//        return orderContollerDelivery;
+//    }
+//
+//    public void setOrderContollerDelivery(String orderContollerDelivery) {
+//        this.orderContollerDelivery = orderContollerDelivery;
+//    }
+//
+//    public String getOrderDelhiveryPhone() {
+//        return orderDelhiveryPhone;
+//    }
+//
+//    public void setOrderDelhiveryPhone(String orderDelhiveryPhone) {
+//        this.orderDelhiveryPhone = orderDelhiveryPhone;
+//    }
+
+    public String getOrderInstruction() {
+        return orderInstruction;
+    }
+
+    public void setOrderInstruction(String orderInstruction) {
+        this.orderInstruction = orderInstruction;
+    }
+
+    public String getOrderServiceTaxAmount() {
+        return orderServiceTaxAmount;
+    }
+
+    public void setOrderServiceTaxAmount(String orderServiceTaxAmount) {
+        this.orderServiceTaxAmount = orderServiceTaxAmount;
+    }
+
+    public String getOrderVatAmount() {
+        return orderVatAmount;
+    }
+
+    public void setOrderVatAmount(String orderVatAmount) {
+        this.orderVatAmount = orderVatAmount;
+    }
+
+    public String getOrderSurChargeAmount() {
+        return orderSurChargeAmount;
+    }
+
+    public void setOrderSurChargeAmount(String orderSurChargeAmount) {
+        this.orderSurChargeAmount = orderSurChargeAmount;
+    }
+
+    public String getOrderTakeAway() {
+        return orderTakeAway;
+    }
+
+    public void setOrderTakeAway(String orderTakeAway) {
+        this.orderTakeAway = orderTakeAway;
+    }
+
+    public String getOrderDeliveryCharge() {
+        return orderDeliveryCharge;
+    }
+
+    public void setOrderDeliveryCharge(String orderDeliveryCharge) {
+        this.orderDeliveryCharge = orderDeliveryCharge;
+    }
+
+    public String getOrderServiceCharge() {
+        return orderServiceCharge;
+    }
+
+    public void setOrderServiceCharge(String orderServiceCharge) {
+        this.orderServiceCharge = orderServiceCharge;
+    }
+
+    public String getOrderDeclineReason() {
+        return orderDeclineReason;
+    }
+
+    public void setOrderDeclineReason(String orderDeclineReason) {
+        this.orderDeclineReason = orderDeclineReason;
+    }
+
+    public String getOrderPaymentMode() {
+        return orderPaymentMode;
+    }
+
+    public void setOrderPaymentMode(String orderPaymentMode) {
+        this.orderPaymentMode = orderPaymentMode;
+    }
+
+    public String getOrderPAYTMSTATUS() {
+        return orderPAYTMSTATUS;
+    }
+
+    public void setOrderPAYTMSTATUS(String orderPAYTMSTATUS) {
+        this.orderPAYTMSTATUS = orderPAYTMSTATUS;
+    }
+
+    public String getOrderPAYTMTXNID() {
+        return orderPAYTMTXNID;
+    }
+
+    public void setOrderPAYTMTXNID(String orderPAYTMTXNID) {
+        this.orderPAYTMTXNID = orderPAYTMTXNID;
+    }
+
+    public String getOrderPAYTMORDERID() {
+        return orderPAYTMORDERID;
+    }
+
+    public void setOrderPAYTMORDERID(String orderPAYTMORDERID) {
+        this.orderPAYTMORDERID = orderPAYTMORDERID;
+    }
+
+    public String getOrderPAYTMCURRENCY() {
+        return orderPAYTMCURRENCY;
+    }
+
+    public void setOrderPAYTMCURRENCY(String orderPAYTMCURRENCY) {
+        this.orderPAYTMCURRENCY = orderPAYTMCURRENCY;
+    }
+
+    public String getOrderPAYTMBANKTXNID() {
+        return orderPAYTMBANKTXNID;
+    }
+
+    public void setOrderPAYTMBANKTXNID(String orderPAYTMBANKTXNID) {
+        this.orderPAYTMBANKTXNID = orderPAYTMBANKTXNID;
+    }
+
+    public String getOrderPAYTMTXNDATE() {
+        return orderPAYTMTXNDATE;
+    }
+
+    public void setOrderPAYTMTXNDATE(String orderPAYTMTXNDATE) {
+        this.orderPAYTMTXNDATE = orderPAYTMTXNDATE;
+    }
+
+    public String getOrderPAYTMBANKNAME() {
+        return orderPAYTMBANKNAME;
+    }
+
+    public void setOrderPAYTMBANKNAME(String orderPAYTMBANKNAME) {
+        this.orderPAYTMBANKNAME = orderPAYTMBANKNAME;
+    }
+
+    public String getOrderPAYTMCHECKSUMHASH() {
+        return orderPAYTMCHECKSUMHASH;
+    }
+
+    public void setOrderPAYTMCHECKSUMHASH(String orderPAYTMCHECKSUMHASH) {
+        this.orderPAYTMCHECKSUMHASH = orderPAYTMCHECKSUMHASH;
+    }
+
+    public String getOrderPAYTMMID() {
+        return orderPAYTMMID;
+    }
+
+    public void setOrderPAYTMMID(String orderPAYTMMID) {
+        this.orderPAYTMMID = orderPAYTMMID;
+    }
+
+    public String getOrderPAYTMRESPCODE() {
+        return orderPAYTMRESPCODE;
+    }
+
+    public void setOrderPAYTMRESPCODE(String orderPAYTMRESPCODE) {
+        this.orderPAYTMRESPCODE = orderPAYTMRESPCODE;
+    }
+
+    public String getOrderPAYTMRESPMSG() {
+        return orderPAYTMRESPMSG;
+    }
+
+    public void setOrderPAYTMRESPMSG(String orderPAYTMRESPMSG) {
+        this.orderPAYTMRESPMSG = orderPAYTMRESPMSG;
+    }
+
+    public String getOrderPAYTMMODE() {
+        return orderPAYTMMODE;
+    }
+
+    public void setOrderPAYTMMODE(String orderPAYTMMODE) {
+        this.orderPAYTMMODE = orderPAYTMMODE;
+    }
+
+    public String getOrderPAYTMTXNAMOUNT() {
+        return orderPAYTMTXNAMOUNT;
+    }
+
+    public void setOrderPAYTMTXNAMOUNT(String orderPAYTMTXNAMOUNT) {
+        this.orderPAYTMTXNAMOUNT = orderPAYTMTXNAMOUNT;
+    }
+
+
+    public class OrderedProducts implements Serializable {
+
+        private String productId;
+        private String catId;
+        private String price;
+        private String productQty;
+        private String addOnParentProductId;
+        private String productName;
+        private String productImage;
+        private String vat;
+        private String swatchBharatTax;
+        private String serviceTax;
+        private String instructions;
+        private String description;
+        private String productType;
+        private String discount;
+        private boolean isAddOn;
+        private ArrayList<OrderedProducts> orderedProductList;
+
+        public OrderedProducts(String productId, String catId, String price, String productQty,
+                               String addOnParentProductId, String productName, String productImage,
+                               String vat, String swatchBharatTax, String serviceTax, boolean isAddOn,
+                               String instructions, String descriptionString, String productType,
+                               String discount) {
+            this.productId = productId;
+            this.catId = catId;
+            this.price = price;
+            this.productQty = productQty;
+            this.addOnParentProductId = addOnParentProductId;
+            this.productName = productName;
+            this.productImage = productImage;
+            this.vat = vat;
+            this.swatchBharatTax = swatchBharatTax;
+            this.serviceTax = serviceTax;
+            this.isAddOn = isAddOn;
+            this.instructions = instructions;
+            this.description = descriptionString;
+            this.productType = productType;
+            this.discount = discount;
+        }
+
+        public OrderedProducts(JSONArray jsonArray) {
+            try {
+
+                orderedProductList = new ArrayList<>();
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject object = jsonArray.getJSONObject(i);
+
+                    OrderedProducts orderedProducts = new OrderedProducts
+                            (object.getString("product_id"),
+                            object.getString("cat_id"),
+                            object.getString("price"),
+                            object.getString("product_qty"),
+                            object.getString("addon_parent_product_id"),
+                            object.getString("product_name"),
+                            object.getString("product_img"),
+                            object.getString("vat"),
+                            object.getString("swach_bharat_tax"),
+                            object.getString("service_tax"),
+                            object.getBoolean("is_addon"),
+                            object.getString("instruction"),
+                            object.getString("discription"),
+                            object.getString("product_type"),
+                            object.getString("discount"));
+
+                    orderedProductList.add(orderedProducts);
+                }
+
+                setOrderedProductList(orderedProductList);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        public String getInstructions() {
+            return instructions;
+        }
+
+        public void setInstructions(String instructions) {
+            this.instructions = instructions;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getProductType() {
+            return productType;
+        }
+
+        public void setProductType(String productType) {
+            this.productType = productType;
+        }
+
+        public String getDiscount() {
+            return discount;
+        }
+
+        public void setDiscount(String discount) {
+            this.discount = discount;
+        }
+
+        public ArrayList<OrderedProducts> getOrderedProductList() {
+            return orderedProductList;
+        }
+
+        public void setOrderedProductList(ArrayList<OrderedProducts> orderedProductList) {
+            this.orderedProductList = orderedProductList;
+        }
+
+        public boolean isAddOn() {
+            return isAddOn;
+        }
+
+        public void setAddOn(boolean addOn) {
+            isAddOn = addOn;
+        }
+
+        public String getServiceTax() {
+            return serviceTax;
+        }
+
+        public void setServiceTax(String serviceTax) {
+            this.serviceTax = serviceTax;
+        }
+
+        public String getSwatchBharatTax() {
+            return swatchBharatTax;
+        }
+
+        public void setSwatchBharatTax(String swatchBharatTax) {
+            this.swatchBharatTax = swatchBharatTax;
+        }
+
+        public String getVat() {
+            return vat;
+        }
+
+        public void setVat(String vat) {
+            this.vat = vat;
+        }
+
+        public String getProductImage() {
+            return productImage;
+        }
+
+        public void setProductImage(String productImage) {
+            this.productImage = productImage;
+        }
+
+        public String getProductName() {
+            return productName;
+        }
+
+        public void setProductName(String productName) {
+            this.productName = productName;
+        }
+
+        public String getAddOnParentProductId() {
+            return addOnParentProductId;
+        }
+
+        public void setAddOnParentProductId(String addOnParentProductId) {
+            this.addOnParentProductId = addOnParentProductId;
+        }
+
+        public String getProductQty() {
+            return productQty;
+        }
+
+        public void setProductQty(String productQty) {
+            this.productQty = productQty;
+        }
+
+        public String getPrice() {
+            return price;
+        }
+
+        public void setPrice(String price) {
+            this.price = price;
+        }
+
+        public String getCatId() {
+            return catId;
+        }
+
+        public void setCatId(String catId) {
+            this.catId = catId;
+        }
+
+        public String getProductId() {
+            return productId;
+        }
+
+        public void setProductId(String productId) {
+            this.productId = productId;
+        }
+
+    }
+}

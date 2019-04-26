@@ -1,0 +1,12 @@
+package com.loginworks.royaldines.utility;
+
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+/**
+ * Created by abc on 09-May-17.
+ */
+
+public interface CartCounter {
+    void setCounter(RelativeLayout rl_counter, TextView tv_counter);
+}

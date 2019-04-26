@@ -1,0 +1,32 @@
+package com.loginworks.royaldines.models;
+
+/**
+ * Created by abc on 20-Apr-17.
+ */
+
+public class HomeBackground {
+    private String path;
+    private String imagename;
+
+    public HomeBackground(String path, String imagename) {
+        this.path = path;
+        this.imagename = imagename;
+    }
+
+    public String getPath() {
+
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getImagename() {
+        return imagename;
+    }
+
+    public void setImagename(String imagename) {
+        this.imagename = imagename;
+    }
+}

@@ -1,0 +1,53 @@
+package com.loginworks.aol.aol_native.models;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+/**
+ * Created by ujjwal on 4/21/2017.
+ */
+
+public class VerifyOTP {
+
+    private int status = 0;
+    private String message;
+    private JSONArray address;
+
+    public VerifyOTP(JSONObject jsonObject) {
+        try {
+
+            if (jsonObject.getInt("status") == 1) {
+                setStatus(jsonObject.getInt("status"));
+                setAddress(jsonObject.getJSONArray("addresses"));
+            }
+            setMessage(jsonObject.getString("message"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public JSONArray getAddress() {
+        return address;
+    }
+
+    public void setAddress(JSONArray address) {
+        this.address = address;
+    }
+
+}

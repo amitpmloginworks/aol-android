@@ -1,0 +1,212 @@
+package com.loginworks.aol.aol_native.fragments;
+
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.transition.TransitionInflater;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.loginworks.aol.aol_native.R;
+import com.loginworks.aol.aol_native.activity.DashboardActivity;
+import com.loginworks.aol.aol_native.adapters.OrderHistoryAdapter;
+import com.loginworks.aol.aol_native.databasehandler.DataHandlerDB;
+import com.loginworks.aol.aol_native.extras.DecimalCheck;
+import com.loginworks.aol.aol_native.extras.FragmentsName;
+import com.loginworks.aol.aol_native.extras.MyPreferences;
+import com.loginworks.aol.aol_native.models.OrderHistory;
+import com.loginworks.aol.aol_native.utility.Util;
+
+/**
+ * Created by ujjwal on 4/12/2017.
+ */
+
+public class OrderHistoryDetailFragment extends Fragment {
+
+    private final String TAG = getClass().getSimpleName();
+
+    private TextView txtBillerName, txtAmount, txtOrderId, txtDate, txtStatus, txtSubTotalAmount,
+            txtDiscountAmount, txtTaxAmount, txtPackageCharges, txtServiceCharges, txtTotalAmount;
+    private LinearLayout orderedItemLayout;
+    private RelativeLayout mainLayout;
+    private Button btnReorder;
+    private MyPreferences myPreferences;
+    private Activity context;
+    private OrderHistory orderHistory;
+    private Util util;
+    private DataHandlerDB dataHandlerDB;
+    private TextView tvTitle;
+    private TextView tvTaxs;
+    private String vat = "", servicetax = "";
+
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        View view1 = inflater.inflate(R.layout.fragment_order_history_detail, container, false);
+        findViews(view1);
+        return view1;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //postponeEnterTransition();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+        }
+        context = getActivity();
+        myPreferences = MyPreferences.getInstance();
+        util = Util.getInstance();
+        dataHandlerDB = DataHandlerDB.getInstance();
+
+        orderHistory = (OrderHistory) getArguments().getSerializable("order");
+
+        //hitBranchesTask(context, Const.APP_ID, myPreferences.getBranchId(context), orderHistory.getOrderId());
+
+        txtBillerName.setText(orderHistory.getOrderBillName());
+        txtAmount.setText(DecimalCheck.decimalFormat(Double.parseDouble(orderHistory.getOrderAmountTotal())));
+        txtOrderId.setText(orderHistory.getOrderId());
+        txtDate.setText(orderHistory.getOrderDate());
+
+        for (int i = 0; i < orderHistory.getOrderedProduct().size(); i++) {
+            OrderHistory.OrderedProducts orderedProducts = orderHistory.getOrderedProduct().get(i);
+            View orderview = View.inflate(context, R.layout.produt_order_detail, null);
+            LinearLayout productLayout = (LinearLayout) orderview.findViewById(R.id.layoutProduct);
+            TextView productName = (TextView) orderview.findViewById(R.id.txtProductName);
+            TextView productPrice = (TextView) orderview.findViewById(R.id.txtProductPrice);
+
+            productName.setText((i + 1) + ". " + orderedProducts.getProductName() + " (" + orderedProducts.getProductQty() + ")");
+            productPrice.setText(DecimalCheck.decimalFormat(Double.parseDouble(orderedProducts.getPrice())));
+//            product.setTextColor(Color.DKGRAY);
+//            product.setPadding(10, 2, 10, 2);
+
+            double productServiceTax = Double.parseDouble(orderedProducts.getServiceTax());
+            double productVat = Double.parseDouble(orderedProducts.getVat());
+
+            if (productServiceTax > 0 && servicetax.length() == 0) {
+                servicetax = orderedProducts.getServiceTax();
+            }
+
+            if (productVat > 0 && vat.length() == 0) {
+                vat = orderedProducts.getVat();
+            }
+
+            if (i % 2 == 0) {
+                productLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.menu_list_selected_color));
+            } else {
+                productLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.dark_grey));
+            }
+
+            orderedItemLayout.addView(productLayout);
+        }
+        String result = "";
+        if (servicetax.length() > 0) {
+            result = "Tax(ST " + servicetax + "% /";
+        } else {
+            result = "Tax(ST 0.00% /";
+        }
+        if (vat.length() > 0) {
+            result = result + " VAT " + vat + "%)";
+        } else {
+            result = result + " VAT 0.00%)";
+        }
+
+        tvTaxs.setText(result);
+
+        txtSubTotalAmount.setText(DecimalCheck.decimalFormat(Double.parseDouble(orderHistory.getOrderActualAmount())));
+        txtDiscountAmount.setText(DecimalCheck.decimalFormat(Double.parseDouble(orderHistory.getOrderDiscountAmount())));
+        txtTaxAmount.setText(DecimalCheck.decimalFormat(Double.parseDouble(orderHistory.getOrderTaxAmount())));
+        txtTotalAmount.setText(DecimalCheck.decimalFormat(Double.parseDouble(orderHistory.getOrderAmountTotal())));
+
+        OrderHistoryAdapter.getOrderStatus(context, orderHistory, txtStatus, btnReorder);
+
+        btnReorder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int qty = dataHandlerDB.getTotalQty();
+                if (qty > 0) {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+                    dialog.setCancelable(false);
+                    dialog.setTitle(context.getResources().getString(R.string.confirmation_title));
+                    dialog.setMessage(context.getResources().getString(R.string.reorder_confirmation));
+                    dialog.setPositiveButton(context.getResources().getString(R.string.discard), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            Bundle bundle = new Bundle();
+                            bundle.putBoolean("reorder", true);
+                            // bundle.putString("address_id", orderHistories.get(position).getOrderAddressId());
+                            dataHandlerDB.deleteAddOn();
+                            dataHandlerDB.deleteAllCart();
+                            dataHandlerDB.deleteManageAddOn();
+                            dataHandlerDB.insertReOrderIntoCart(orderHistory.getOrderedProduct());
+                            util.openFragment(context, FragmentsName.CHECKOUT, FragmentsName.CHECKOUT_ID, bundle);
+                        }
+                    })
+                            .setNegativeButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Action for "Cancel".
+                                }
+                            });
+
+                    final AlertDialog alert = dialog.create();
+                    alert.show();
+                } else {
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("reorder", true);
+                    dataHandlerDB.insertReOrderIntoCart(orderHistory.getOrderedProduct());
+                    util.openFragment(context, FragmentsName.CHECKOUT, FragmentsName.CHECKOUT_ID, bundle);
+                }
+            }
+        });
+
+
+    }
+
+
+    private void findViews(View view) {
+        txtBillerName = (TextView) view.findViewById(R.id.txtBillerNameOrderDetail);
+        txtAmount = (TextView) view.findViewById(R.id.txtOrderAmountDetail);
+        txtOrderId = (TextView) view.findViewById(R.id.txtOrderIdDetail);
+        txtDate = (TextView) view.findViewById(R.id.txtOrderDateDetail);
+        txtStatus = (TextView) view.findViewById(R.id.txtOrderStatusDetail);
+        txtSubTotalAmount = (TextView) view.findViewById(R.id.txtsubtotal_detail);
+        txtDiscountAmount = (TextView) view.findViewById(R.id.discount_detail);
+        txtTaxAmount = (TextView) view.findViewById(R.id.tax_detail);
+        txtPackageCharges = (TextView) view.findViewById(R.id.package_detail);
+        txtServiceCharges = (TextView) view.findViewById(R.id.service_charge_detail);
+        txtTotalAmount = (TextView) view.findViewById(R.id.total_amount_detail);
+        tvTaxs = (TextView) view.findViewById(R.id.tvTaxs);
+
+        btnReorder = (Button) view.findViewById(R.id.btnReorderDetail);
+        btnReorder.setVisibility(View.INVISIBLE);
+
+        mainLayout = (RelativeLayout) view.findViewById(R.id.orderHistoryDetailLayout);
+        orderedItemLayout = (LinearLayout) view.findViewById(R.id.orderedItemLayout);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        DashboardActivity.toolbar.setVisibility(View.VISIBLE);
+        tvTitle = ((DashboardActivity) context).txt_Title;
+        tvTitle.setText(getResources().getString(R.string.order_history));
+    }
+
+
+}

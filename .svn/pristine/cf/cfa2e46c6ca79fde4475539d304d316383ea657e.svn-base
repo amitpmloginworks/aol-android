@@ -1,0 +1,351 @@
+package com.loginworks.aol.aol_native.fragments;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.loginworks.aol.aol_native.R;
+import com.loginworks.aol.aol_native.activity.DashboardActivity;
+import com.loginworks.aol.aol_native.databasehandler.DataHandlerDB;
+import com.loginworks.aol.aol_native.extras.Appstatus;
+import com.loginworks.aol.aol_native.extras.Const;
+import com.loginworks.aol.aol_native.extras.FragmentsName;
+import com.loginworks.aol.aol_native.extras.JsonRequestAll;
+import com.loginworks.aol.aol_native.extras.MyPreferences;
+import com.loginworks.aol.aol_native.extras.ProgressDialogUtils;
+import com.loginworks.aol.aol_native.extras.ServiceURL;
+import com.loginworks.aol.aol_native.models.Address;
+import com.loginworks.aol.aol_native.models.OTP;
+import com.loginworks.aol.aol_native.models.VerifyOTP;
+import com.loginworks.aol.aol_native.services.WebServiceAbstract;
+import com.loginworks.aol.aol_native.services.WebServiceClient;
+import com.loginworks.aol.aol_native.utility.Util;
+
+import org.json.JSONObject;
+
+import java.util.regex.Pattern;
+
+/**
+ * Created by Ashish Verma on 17-04-2017.
+ */
+
+public class GetOTPFragment extends Fragment implements View.OnClickListener {
+
+    private Button mGetCode, mDeliver;
+    private LinearLayout mWhyOTP, mProblemOTP;
+    private LinearLayout mResendOTP;
+    private EditText mOTP, mUserName, mMobileNo;
+    private Util util;
+    private Activity mActivity;
+    private String TAG = getClass().getName();
+    private String userName, mobile_number, myOTP, generatedOTP;
+    private MyPreferences myPreferences;
+    private DataHandlerDB dataHandlerDB;
+    private Pattern character_Pattern = Pattern.compile("[a-zA-Z ]+");
+    private Pattern number_Pattern = Pattern.compile("[0-9]+");
+    private TextView tv_suppor_contact, tv_resend;
+    private ProgressBar progressBar;
+    //private ProgressBar progressBar2;
+    private int progressStatus = 0;
+    private Handler mHandler = new Handler();
+    private Thread runnable;
+    private TextView tvWhyYourNumber;
+
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_get_otp_layout, container, false);
+        util = Util.getInstance();
+        mActivity = getActivity();
+        myPreferences = MyPreferences.getInstance();
+        dataHandlerDB = DataHandlerDB.getInstance();
+
+        findview(view);
+        tv_suppor_contact.setText(" " + myPreferences.getOtpSupport(mActivity));
+        return view;
+    }
+
+    private void findview(View view) {
+        mGetCode = (Button) view.findViewById(R.id.opt_get_code_button);
+        mDeliver = (Button) view.findViewById(R.id.otp_deliver);
+
+        mGetCode.setOnClickListener(GetOTPFragment.this);
+        mDeliver.setOnClickListener(GetOTPFragment.this);
+
+        mWhyOTP = (LinearLayout) view.findViewById(R.id.ll_why_otp);
+        mProblemOTP = (LinearLayout) view.findViewById(R.id.ll_problem_otp);
+        mResendOTP = (LinearLayout) view.findViewById(R.id.ll_resend_otp);
+        mUserName = (EditText) view.findViewById(R.id.otp_customer_name);
+        mOTP = (EditText) view.findViewById(R.id.opt_get_code);
+        mMobileNo = (EditText) view.findViewById(R.id.otp_customer_mobile);
+        tv_suppor_contact = (TextView) view.findViewById(R.id.tv_suppor_contact);
+        tv_resend = (TextView) view.findViewById(R.id.tv_resend);
+        tvWhyYourNumber = (TextView) view.findViewById(R.id.tv_whyYourNumber);
+
+        tv_resend.setOnClickListener(this);
+        tvWhyYourNumber.setOnClickListener(this);
+
+        //progressBar.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));
+
+        progressBar = (ProgressBar) view.findViewById(R.id.resend_progressbar);
+        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        DashboardActivity.toolbar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+            case R.id.opt_get_code_button:
+
+                userName = mUserName.getText().toString().trim();
+                mobile_number = mMobileNo.getText().toString().trim();
+                try {
+                    Long digit_mobile = Long.parseLong(mobile_number);
+                    long temp = 0;
+                    if (digit_mobile <= temp) {
+                        Toast.makeText(mActivity, getResources().getString(R.string.mobile_cannot_be_zero), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                if (userName.equals("")) {
+                    Toast.makeText(mActivity, getResources().getString(R.string.enter_user_name), Toast.LENGTH_SHORT).show();
+                    return;
+
+                } else if (!(character_Pattern.matcher(userName).matches())) {
+                    Toast.makeText(mActivity, getResources().getString(R.string.user_valid), Toast.LENGTH_SHORT).show();
+                    return;
+
+                } else if (mobile_number.equals("")) {
+                    Toast.makeText(mActivity, getResources().getString(R.string.enter_mobile_number), Toast.LENGTH_SHORT).show();
+                    return;
+
+                } else if (!(number_Pattern.matcher(mobile_number).matches())) {
+                    Toast.makeText(mActivity, getResources().getString(R.string.valid_mobile), Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (mobile_number.length() != 10) {
+                    Toast.makeText(mActivity, getResources().getString(R.string.mobile_number_validate), Toast.LENGTH_SHORT).show();
+                    return;
+
+                } else {
+                    util.disableKeyboard(mActivity);
+                    hitGetOTP(mActivity, Const.APP_ID, mobile_number);
+
+                    mOTP.setVisibility(View.VISIBLE);
+                    mGetCode.setVisibility(View.GONE);
+                    mDeliver.setVisibility(View.VISIBLE);
+                }
+                break;
+
+            case R.id.otp_deliver:
+
+                mobile_number = mMobileNo.getText().toString();
+                myOTP = mOTP.getText().toString();
+                if (myOTP.equals(generatedOTP)) {
+                    hitVerifyOTP(mActivity, Const.APP_ID, mobile_number, myOTP);
+                    progressBar.setProgress(0);
+                    progressBar.setVisibility(View.GONE);
+                    if (runnable != null) {
+                        runnable.interrupt();
+                    }
+                } else {
+                    Toast.makeText(mActivity, getResources().getString(R.string.otp_invalid), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.tv_resend:
+                progressStatus = 0;
+                progressBar.setProgress(progressStatus);
+                hitGetOTP(mActivity, Const.APP_ID, mobile_number);
+                break;
+            case R.id.tv_whyYourNumber:
+                Toast.makeText(mActivity, getResources().getString(R.string.you_will_get_otp_for_that), Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    private void hitGetOTP(final Activity mActivity, String appId, String mobile_number) {
+
+        try {
+            if (Appstatus.getInstance(mActivity).isOnline()) {
+                if (mWhyOTP.getVisibility() == View.VISIBLE) {
+                    mWhyOTP.setVisibility(View.GONE);
+                }
+                mOTP.requestFocus();
+                mResendOTP.setVisibility(View.VISIBLE);
+                mProblemOTP.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+                progressRun();
+
+                final JSONObject jsonObj = JsonRequestAll.createJsonParamsGetOTP(appId, mobile_number);
+                Log.e(TAG + " OTP REQUEST :: ", jsonObj + "");
+
+                final WebServiceAbstract webServiceAbstract = new WebServiceAbstract() {
+                    @Override
+                    public void onComplete(JSONObject jsonObject) {
+                        try {
+                            if (jsonObject != null) {
+                                Log.e(TAG, jsonObject.toString());
+                                afterResponseOTP(mActivity, jsonObject);
+                                Log.e(TAG + " OTP RESPONSE :: ", jsonObject + "");
+                            } else {
+                                Toast.makeText(mActivity, getResources().getString(R.string.unabletoproceed), Toast.LENGTH_SHORT).show();
+                            }
+                            ProgressDialogUtils.stopProgress();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                };
+
+                WebServiceClient.callPOSTService(ServiceURL.GET_OTP, jsonObj, Const.JSON_OBJECT_RESPONSE,
+                        myPreferences.getAolToken(mActivity), webServiceAbstract, Request.Method.POST);
+
+            } else {
+                Toast.makeText(mActivity, getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void afterResponseOTP(Activity mActivity, JSONObject jsonObject) {
+        //ProgressDialogUtils.stopProgress();
+        OTP otp = new OTP(jsonObject);
+        generatedOTP = otp.getOTP();
+        mMobileNo.setEnabled(false);
+        mUserName.setEnabled(false);
+    }
+
+    private void hitVerifyOTP(final Activity mActivity, String appId, String mobile_number, String otp) {
+
+        try {
+            if (Appstatus.getInstance(mActivity).isOnline()) {
+                ProgressDialogUtils.startProgressBar(mActivity, getResources().getString(R.string.pleasewait));
+
+                final JSONObject jsonObj = JsonRequestAll.createJsonParamsVerifyOTP(appId, mobile_number, otp);
+                Log.e(TAG + " REQUEST :: ", jsonObj + "");
+
+                final WebServiceAbstract webServiceAbstract = new WebServiceAbstract() {
+                    @Override
+                    public void onComplete(JSONObject jsonObject) {
+                        try {
+                            if (jsonObject != null) {
+                                Log.e(TAG, jsonObject.toString());
+                                afterResponse(mActivity, jsonObject);
+                            } else {
+                                Toast.makeText(mActivity, getResources().getString(R.string.unabletoproceed), Toast.LENGTH_SHORT).show();
+                            }
+                            ProgressDialogUtils.stopProgress();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                };
+
+                WebServiceClient.callPOSTService(ServiceURL.VERIFY_OTP, jsonObj, Const.JSON_OBJECT_RESPONSE,
+                        myPreferences.getAolToken(mActivity), webServiceAbstract, Request.Method.POST);
+
+            } else {
+                Toast.makeText(mActivity, getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+                ProgressDialogUtils.stopProgress();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void afterResponse(Activity mActivity, JSONObject jsonObject) {
+
+        Log.e(TAG + " RESPONSE :: ", jsonObject + "");
+
+        ProgressDialogUtils.stopProgress();
+
+        VerifyOTP verifyOTP = new VerifyOTP(jsonObject);
+        if (verifyOTP.getStatus() == 1) {
+
+            myPreferences.setUserMobile(mActivity, mobile_number);
+            myPreferences.setUserName(mActivity, userName);
+            myPreferences.setSession(mActivity);
+
+            if (verifyOTP.getAddress().length() > 0) {
+                Address address = new Address(verifyOTP.getAddress());
+                dataHandlerDB.insertAddressData(address.getAddresses());
+            }
+
+            Bundle bundle = new Bundle();
+            bundle.putString("page", "otp");
+            if (myPreferences.getHomeDelivery(mActivity).equals("1")) {
+                if (dataHandlerDB.getAddress().size() > 0) {
+                    util.openFragment(mActivity, FragmentsName.CUSTOMER_DELIVERY_ADDRESS, FragmentsName.CUSTOMER_DELIVERY_ADDRESS_ID, bundle);
+                } else {
+                    util.openFragment(mActivity, FragmentsName.ADD_ADDRESS, FragmentsName.ADD_ADDRESS_ID, bundle);
+                }
+            } else {
+                util.openFragment(mActivity, FragmentsName.CONFIRM_ORDER, FragmentsName.CONFIRM_ORDER_ID, bundle);
+            }
+        } else {
+            Toast.makeText(mActivity, verifyOTP.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void progressRun() {
+        //  mTxt_Resend.setVisibility(View.GONE);
+
+        runnable = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (progressStatus < 100) {
+                    progressStatus += 1;
+                    try {
+                        Thread.sleep(350);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(progressStatus);
+                            if (progressStatus == 100) {
+                                mProblemOTP.setVisibility(View.VISIBLE);
+                                progressBar.setVisibility(View.GONE);
+                                progressStatus = 0;
+                                progressBar.setProgress(progressStatus);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        runnable.start();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (runnable != null) {
+            runnable.interrupt();
+        }
+    }
+}

@@ -1,0 +1,172 @@
+package com.loginworks.aol.aol_native.activity;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
+
+import com.loginworks.aol.aol_native.R;
+import com.loginworks.aol.aol_native.adapters.BranchAdapter;
+import com.loginworks.aol.aol_native.databasehandler.DataHandlerDB;
+import com.loginworks.aol.aol_native.extras.LocalUtilty;
+import com.loginworks.aol.aol_native.extras.MyPreferences;
+import com.loginworks.aol.aol_native.models.BranchParser;
+
+import java.util.ArrayList;
+
+public class BranchSelection extends AppCompatActivity {
+
+    LocalUtilty localUtilty;
+    private String TAG = BranchSelection.this.getClass().getSimpleName();
+    private Activity mActivity;
+    private RecyclerView branchRecyclerView;
+    private LinearLayoutManager mLayoutManager;
+    private ArrayList<BranchParser> branchList;
+    private BranchAdapter branchAdapter;
+    private MyPreferences myPreferences;
+    private DataHandlerDB dataHandlerDB;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_branch_selection);
+
+        mActivity = BranchSelection.this;
+        myPreferences = MyPreferences.getInstance();
+        dataHandlerDB = DataHandlerDB.getInstance();
+
+        localUtilty = LocalUtilty.getInstance();
+//        localUtilty.copyDatabase(mActivity);
+        findViews();
+
+        try {
+            branchList = dataHandlerDB.getBranchData();
+            branchAdapter = new BranchAdapter(mActivity, branchList);
+            branchRecyclerView.setAdapter(branchAdapter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void findViews() {
+        branchRecyclerView = (RecyclerView) findViewById(R.id.branchRecycler);
+        mLayoutManager = new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false);
+        branchRecyclerView.setLayoutManager(mLayoutManager);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (myPreferences.getBranchId(mActivity).equals("")) {
+            Toast.makeText(mActivity, getResources().getString(R.string.select_branch), Toast.LENGTH_SHORT).show();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+//    /*Authenticating user, based on there credentails*/
+//    private void hitBranchesTask(final Activity mActivity, final String appId) {
+//
+//        try {
+//            //JSONObject jsonObject = null;
+//            if (Appstatus.getInstance(mActivity).isOnline()) {
+//
+//                ProgressDialogUtils.startProgressBar(mActivity, getResources().getString(R.string.pleasewait));
+//
+//                String values = ServiceURL.encodeBuilder(ServiceURL.GET_BRANCH_KEYS, appId);
+//                String BRANCH_URL = ServiceURL.getURL(ServiceURL.BRANCH, values);
+//
+//                WebServiceAbstract webServiceAbstract = new WebServiceAbstract() {
+//                    @Override
+//                    public void onComplete(JSONArray jsonArray) {
+//                        try {
+//                            if (jsonArray != null) {
+//                                afterResponse(mActivity, jsonArray);
+//
+//                            } else {
+//                                //     Toast.makeText(activity, getString(R.string.try_again), Toast.LENGTH_SHORT).show();
+//                            }
+//                            ProgressDialogUtils.stopProgress();
+//                        } catch (Exception ex) {
+//                            ex.printStackTrace();
+//                        }
+//                    }
+//                };
+//                WebServiceClient.callGETService(BRANCH_URL, Const.JSON_ARRAY_RESPONSE, "", webServiceAbstract, Request.Method.GET);
+//            } else {
+//                Toast.makeText(mActivity, getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+//                ProgressDialogUtils.stopProgress();
+//
+//            }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
+//
+//    private void afterResponse(final Activity mActivity, final JSONArray jsonObject) {
+//
+//        try {
+//            Log.d(TAG, "RESPONSE :: " + jsonObject);
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//
+//                    BranchParser branchParser = new BranchParser(jsonObject);
+//                    ProgressDialogUtils.stopProgress();
+//                    if (branchParser.getErrorMessage() != null) {
+//                        handleFailure(mActivity, branchParser);
+//                    } else {
+//                        handleSuccess(mActivity, branchParser);
+//                    }
+//                }
+//            });
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
+//
+//    private void handleFailure(Activity mActivity, BranchParser branchParser) {
+//        Toast.makeText(mActivity, branchParser.getErrorMessage(), Toast.LENGTH_SHORT).show();
+//    }
+//
+//    private void handleSuccess(Activity mActivity, BranchParser branchParser) {
+//        Log.d(TAG, "BRANCH LIST SUCCESS");
+//
+//        if (branchParser.getTotalBranches() > 1) {
+//
+//            branchList = branchParser.getBranchList();
+//            branchAdapter = new BranchAdapter(mActivity, branchList);
+//            branchRecyclerView.setAdapter(branchAdapter);
+//
+//        } else {
+//
+//            myPreferences.setBranchId(mActivity, branchParser.getBranchList().get(0).getBranch_id().trim());
+//            myPreferences.setBranchName(mActivity, branchParser.getBranchList().get(0).getLocation_name().trim());
+//            myPreferences.setBranchAddress(mActivity, branchParser.getBranchList().get(0).getAddress().trim());
+//            myPreferences.setBranchCity(mActivity, branchParser.getBranchList().get(0).getCity().trim());
+//            myPreferences.setBranchState(mActivity, branchParser.getBranchList().get(0).getState().trim());
+//            myPreferences.setBranchCountry(mActivity, branchParser.getBranchList().get(0).getCountry().trim());
+//            myPreferences.setBranchZipcode(mActivity, branchParser.getBranchList().get(0).getZipcode().trim());
+//            myPreferences.setBranchMobile(mActivity, branchParser.getBranchList().get(0).getMobile().trim());
+//            myPreferences.setBranchPhone(mActivity, branchParser.getBranchList().get(0).getPhone().trim());
+//            myPreferences.setBranchLatitude(mActivity, branchParser.getBranchList().get(0).getLatitude().trim());
+//            myPreferences.setBranchLongitude(mActivity, branchParser.getBranchList().get(0).getLongitude().trim());
+//            myPreferences.setBranchEmail(mActivity, branchParser.getBranchList().get(0).getEmail().trim());
+//
+////            Intent intent = new Intent(this.mActivity, DashboardActivity.class);
+////            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+////            startActivity(intent);
+//            Toast.makeText(mActivity, branchParser.getBranchList().get(0).getLocation_name().trim(), Toast.LENGTH_SHORT).show();
+////            finish();
+//        }
+//
+//    }
+}

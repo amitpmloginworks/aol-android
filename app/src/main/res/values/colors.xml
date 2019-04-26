@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#df341f</color>
+    <color name="colorPrimaryDark">#C32D1B</color>
+    <color name="colorAccent">#c32d1b</color>
+
+    <color name="menu_list_selected_color">#FFefefef</color>
+    <color name="menu_list_unselected_color">#FF777777</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000</color>
+    <color name="colorPrimaryDarkBottom">#bddf341f</color>
+    <color name="more_background">#FFf4f1ed</color>
+    <color name="deliveredColor">#04B100</color>
+    <color name="dark_grey">#c7c7c7</color>
+    <color name="yellow_color">#CECA00</color>
+
+    <color name="cardViewBackgroundColor">#F4F4F4</color>
+    <color name="total_bg">#242424</color>
+    <color name="colorPrimarytransparant">#bbdf341f</color>
+
+
+</resources>

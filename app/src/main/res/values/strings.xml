@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Royal Dine</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet,consectetuer adipis cing elit. Lorem ipsum dolor sit amet,consectet uer adipiscing elit. Lorem ipsum dolor sit amet,consectet uer adipiscing elit. Lorem ipsum dolor sit amet,consectet uer adipiscing elit.</string>
+    <string name="time_out">Time out, please try again</string>
+    <string name="tryagain">Server is not responding, please try again.</string>
+    <string name="nointernet">Please check your internet connection. Network not available…!!</string>
+    <string name="enable_GPS">Your Location seems to be disabled, do you want to enable it.</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string-array name="nav_drawer_items">
+        <item>Home</item>
+        <item>Order Now</item>
+        <item>Order History</item>
+        <item>About Us</item>
+        <item>Contact Us</item>
+        <item>Support Us</item>
+    </string-array>
+
+    <array name="nav_drawer_icons">
+        <item>@drawable/drawer_home_selector</item>
+        <item>@drawable/drawer_order_now_selector</item>
+        <item>@drawable/drawer_order_history_selector</item>
+        <item>@drawable/drawer_about_us_selector</item>
+        <item>@drawable/drawer_contact_us_selector</item>
+        <item>@drawable/drawer_support_us_selector</item>
+    </array>
+
+    <array name="nav_drawer_icons_unselected">
+        <item>@mipmap/home_grey</item>
+        <item>@mipmap/order_grey</item>
+        <item>@mipmap/history_grey</item>
+        <item>@mipmap/about_us_grey</item>
+        <item>@mipmap/contact_grey</item>
+        <item>@mipmap/support_grey</item>
+    </array>
+
+    <array name="nav_drawer_icons_selected">
+        <item>@mipmap/home_red</item>
+        <item>@mipmap/order_red</item>
+        <item>@mipmap/history_red</item>
+        <item>@mipmap/about_us_red</item>
+        <item>@mipmap/contact_red</item>
+        <item>@mipmap/support_red</item>
+    </array>
+
+    <string name="prev_home">More</string>
+    <string name="contact_us">Contact us</string>
+    <string name="support">Support</string>
+    <string name="about_us">About us</string>
+    <string name="select_location">Select Location</string>
+    <string name="pleasewait">Please Wait...</string>
+    <string name="_3_6">3.6</string>
+    <string name="m32_block_m_mamura_sector_66_noida_uttar_pradesh_201301">M32, BLock M, Mamura, Sector 66, Noida, Uttar Pradesh 201301</string>
+    <string name="km">Km</string>
+    <string name="select_branch">Please select a Branch.</string>
+    <string name="re_order">Re-Order</string>
+    <string name="delivered">Delivered</string>
+    <string name="no_order">No Orders Found.</string>
+    <string name="name">Name</string>
+    <string name="order_id">Order ID.</string>
+
+    <string name="exit">Press again to exit</string>
+    <string name="cannot_be_zero">Cannot be less than zero.</string>
+
+    <string name="categories">Categories</string>
+    <string name="food_menu">Food Menu</string>
+    <string name="order_history">Order History</string>
+    <string name="order_detail">Order Detail</string>
+    <string name="cart">Cart</string>
+
+    <string name="proceed">Proceed</string>
+    <string name="username">* User Name</string>
+    <string name="registrated_mobile_no">Registered Mobile No.</string>
+    <string name="delivery_phone_no">Delivery Phone No.</string>
+    <string name="email_id">Email Id</string>
+    <string name="house_no">House No.</string>
+    <string name="street">* Street</string>
+    <string name="landmark">* Landmark</string>
+    <string name="city">* City</string>
+    <string name="pincode">* Pincode</string>
+    <string name="instruction">Instruction</string>
+    <string name="enter_delivery">Enter Delivery Phone No.</string>
+    <string name="enter_email">Enter your Mail Id</string>
+    <string name="fill_address">Please fill you Address</string>
+    <string name="enter_city">Enter your City</string>
+    <string name="enter_landmark">Enter Landmark</string>
+    <string name="submit_pincode">Pincode</string>
+    <string name="please_fill_extra">Please fill any...</string>
+    <string name="ok_proceed">Ok Proceed</string>
+    <string name="your_name">Your Name</string>
+    <string name="mobile_no">Mobile No.</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="get_code">Get Code</string>
+    <string name="mobile_no_required">Why your mobile number is required</string>
+    <string name="registrated_mobile_no_otp">We have sent OTP to the Registered Mobile Number</string>
+    <string name="otp_problem">Problem with OTP? Call-</string>
+    <string name="or">or</string>
+    <string name="resend_otp"><u>Resend OTP</u></string>
+    <string name="manage_add_on">Manage Add-on</string>
+    <string name="check_out">Check Out</string>
+    <string name="no_item_into_cart">No item into the cart</string>
+    <string name="no_addons">No Addons</string>
+    <string name="unabletoproceed">Unable to proceed</string>
+    <string name="noti_title">Royal Dine </string>
+
+    <string name="f_name">First Name</string>
+    <string name="l_name">Last Name</string>
+    <string name="email">Email Address</string>
+    <string name="mobile">Mobile number</string>
+    <string name="query">Query</string>
+    <string name="fill_fname">Please fill your first name</string>
+    <string name="fill_lname">Please fill your last name</string>
+    <string name="fill_email">Enter your email id</string>
+    <string name="fill_mobile">Enter your mobile number</string>
+    <string name="fill_query">Enter your query...</string>
+    <string name="verify_code">Verify Code</string>
+    <string name="address_deleted">Address deleted successfully</string>
+    <string name="address_not_found">Address not found.</string>
+    <string name="lws_link">www.apponlease.com</string>
+    <string name="submit">Submit</string>
+    <string name="order_type">Order Type</string>
+    <string name="take_away">TAKE AWAY</string>
+    <string name="home_delivery">HOME DELIVERY</string>
+    <string name="checkout_continue">Continue</string>
+
+    <string name="empty_email">Please provide your email id.</string>
+    <string name="empty_fname">Please enter your first name.</string>
+    <string name="empty_lname">Please enter your last name.</string>
+    <string name="empty_mobile">Please enter phone number.</string>
+
+    <string name="fname_valid">First name can not be alphanumeric, only characters allowed.</string>
+    <string name="lname_valid">Last name can not be alphanumeric, only characters allowed.</string>
+    <string name="valid_email">Please provide valid email address.</string>
+    <string name="valid_mobile">Please enter a valid phone number.</string>
+    <string name="apply">Apply</string>
+    <string name="enter_promo_code">Enter Promo Code</string>
+    <string name="thank_u_msg_a">While We are Preparing-Share Your location to </string>
+    <string name="thank_u_msg_b">for a faster delivery.</string>
+    <string name="add_new_address">Add New Address</string>
+    <string name="not_logged_id">You are not Logged In.</string>
+    <string name="comming_soon">Comming Soon...</string>
+    <string name="search_here">Search Here</string>
+    <string name="no_record_found">No Record Found</string>
+    <string name="reorder_confirmation">Are you sure, want discard your previous selection?</string>
+    <string name="confirmation_title">Confirmation !!!</string>
+    <string name="discard">Discard</string>
+    <string name="cancel">"Cancel "</string>
+    <string name="order_review">Order Review</string>
+    <string name="removed_from_favourite">Removed from favourite</string>
+    <string name="added_to_favourite">Added to favourite</string>
+    <string name="enter_user_name">Enter Your Name</string>
+    <string name="enter_user_mobile">Enter Phone No.</string>
+    <string name="user_valid">Name can not be alphanumeric, only characters allowed.</string>
+    <string name="enter_mobile_number">Enter Mobile Number</string>
+    <string name="mobile_number_validate">Enter 9 Digit Mobile Number</string>
+    <string name="otp_invalid">OTP is not valid.</string>
+    <string name="only_number">Only Number allow</string>
+    <string name="mobile_cannot_be_zero">Mobile no. cannot be zero</string>
+    <string name="deliver_info">Delivery Info</string>
+
+    <string name="username_adrs">Username only accept letters.</string>
+    <string name="provide_username">Provide Your name.</string>
+    <string name="provide_mobile">Provide Mobile No.</string>
+    <string name="valid_mobile_no">Provide valid mobile no.</string>
+    <string name="email_adrs">Provide email address.</string>
+    <string name="valid_mail_adrs">Provide valid email address.</string>
+    <string name="house_adrs">Provide house no.</string>
+    <string name="strt_adrs">Provide street Name.</string>
+    <string name="strt_landmark">Provide landmark.</string>
+    <string name="city_adrs">Provide city name.</string>
+    <string name="pin_adrs">Provide pincode.</string>
+    <string name="min_order_one">"The minimum order required is "</string>
+    <string name="min_order_two">"/- SAR."</string>
+    <string name="actual_product">* Actual Product may differ from Product Shown</string>
+    <string name="service_charges">Service Charges</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="package_charges">Package Charges</string>
+    <string name="tax_st_0_00_vat_0_00" formatted="false">CGST 0.00% / SGST 0.00%</string>
+    <string name="discount_amount">Discount Amount</string>
+    <string name="subtotal_amount">Subtotal Amount</string>
+    <string name="guest_user">Guest User</string>
+    <string name="discountRemove">A Discount has been already applied. Do you want to remove it and apply the new one.</string>
+    <string name="pincode_cannot_be_zero">Pincode cannot be zero</string>
+    <string name="city_accecpts_only_letters">Enter only letters</string>
+    <string name="please_enter_valid_instructions">Please enter valid instructions</string>
+    <string name="provide_instruction">Provide Instructions</string>
+    <string name="click_to_edit_promo_code">Click edit to enter new promo code.</string>
+    <string name="invalid_promo_code">Invalid Promo Code</string>
+    <string name="coupan_not_applicable">Coupon not applicable</string>
+    <string name="promo_code_applied_successfully">Promo code applied successfully</string>
+    <string name="higer_discount">A higher discount is applied already.</string>
+    <string name="promo_code_already_applied">Promo Code applied already</string>
+    <string name="you_will_get_otp_for_that">You will get one OTP on this number</string>
+
+    <string name="app_id">309005412803023</string>
+    <string name="client_token">31cf85881dfb73adf2e4b0ed275ccb9a</string>
+    <string name="permissions_get_accounts_message">
+        Grant permission to read your email address from your device to pre-fill.
+    </string>
+    <string name="permissions_get_accounts_title">Read Email Address</string>
+    <string name="permissions_read_phone_state_message">
+        Grant permission to read your phone number from your device to pre-fill.
+    </string>
+    <string name="permissions_read_phone_state_title">Read Phone Number</string>
+    <string name="permissions_receive_sms_message">
+        Grant permission to read your SMS code from your device to pre-fill.
+    </string>
+    <string name="permissions_receive_sms_title">Read SMS Code</string>
+
+</resources>

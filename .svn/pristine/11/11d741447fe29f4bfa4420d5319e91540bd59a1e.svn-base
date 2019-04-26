@@ -1,0 +1,201 @@
+package com.loginworks.aol.aol_native.adapters;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.loginworks.aol.aol_native.R;
+import com.loginworks.aol.aol_native.databasehandler.DataHandlerDB;
+import com.loginworks.aol.aol_native.extras.DecimalCheck;
+import com.loginworks.aol.aol_native.extras.FragmentsName;
+import com.loginworks.aol.aol_native.models.OrderHistory;
+import com.loginworks.aol.aol_native.utility.Util;
+
+import java.util.ArrayList;
+
+
+/**
+ * Created by Ashish Verma on 10-04-2017.
+ */
+
+public class OrderHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private Context context;
+    private ArrayList<OrderHistory> orderHistories;
+    private Util util;
+    private DataHandlerDB dataHandlerDB;
+
+    public OrderHistoryAdapter(Context context, ArrayList<OrderHistory> orderHistories) {
+        this.context = context;
+        this.orderHistories = orderHistories;
+
+        util = Util.getInstance();
+        dataHandlerDB = DataHandlerDB.getInstance();
+    }
+
+    public static String getOrderStatus(Context context, OrderHistory orderHistory, TextView txtOrderStatus, Button reorder) {
+
+        String status;
+
+        if (orderHistory.getOrderDecline().equals("0")) {
+            if (orderHistory.getOrderStatus().equals("1")) {
+                if (orderHistory.getOrderTakeAway().equals("1")) {
+                    if (orderHistory.getOrderOnRoad().equals("1")) {
+                        if (orderHistory.getOrderOrderDelivery().equals("1")) {
+                            status = "Delivered";
+                            txtOrderStatus.setText(status);
+                            txtOrderStatus.setTextColor(ContextCompat.getColor(context, R.color.deliveredColor));
+                            reorder.setVisibility(View.VISIBLE);
+                        } else {
+                            status = "Ready";
+                            txtOrderStatus.setText(status);
+                            txtOrderStatus.setTextColor(ContextCompat.getColor(context, R.color.deliveredColor));
+                        }
+                    } else {
+                        status = "In Process";
+                        txtOrderStatus.setText(status);
+                        txtOrderStatus.setTextColor(ContextCompat.getColor(context, R.color.yellow_color));
+                    }
+                } else {
+                    if (orderHistory.getOrderOnRoad().equals("1")) {
+                        if (orderHistory.getOrderOrderDelivery().equals("1")) {
+                            status = "Delivered";
+                            txtOrderStatus.setText(status);
+                            txtOrderStatus.setTextColor(ContextCompat.getColor(context, R.color.deliveredColor));
+                            reorder.setVisibility(View.VISIBLE);
+                        } else {
+                            status = "On Road";
+                            txtOrderStatus.setText(status);
+                            txtOrderStatus.setTextColor(ContextCompat.getColor(context, R.color.yellow_color));
+                        }
+                    } else {
+                        status = "In Process";
+                        txtOrderStatus.setText(status);
+                        txtOrderStatus.setTextColor(ContextCompat.getColor(context, R.color.yellow_color));
+                    }
+                }
+            } else {
+                status = "Pending";
+                txtOrderStatus.setText(status);
+                txtOrderStatus.setTextColor(ContextCompat.getColor(context, R.color.yellow_color));
+            }
+        } else {
+            status = "Decline";
+            txtOrderStatus.setText(status);
+            txtOrderStatus.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+        }
+
+        return status;
+    }
+
+    @Override
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.order_history_row, parent, false);
+        return new MyViewHolder((view));
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
+
+        final MyViewHolder holder = (MyViewHolder) viewHolder;
+
+        final OrderHistory orderHistory = orderHistories.get(position);
+
+        holder.mCustomerName.setText(orderHistory.getOrderBillName());
+        holder.mOrderId.setText(orderHistory.getOrderId());
+        holder.mOrderPrice.setText("\u20b9 " + DecimalCheck.decimalFormat(Double.parseDouble(orderHistory.getOrderAmountTotal())) + " /-");
+        holder.mOrderDate.setText(orderHistory.getOrderDate());
+        holder.btnReorder.setVisibility(View.INVISIBLE);
+
+        getOrderStatus(context, orderHistory, holder.txtOrderStatus, holder.btnReorder);
+
+        holder.orderHistoryListLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("order", orderHistories.get(position));
+
+                util.openFragment(context, FragmentsName.FRAGMENT_ORDER_HISTORY_DETAIL,
+                        FragmentsName.ORDER_HISTORY_DETAIL_ID, bundle);
+
+            }
+        });
+
+        holder.btnReorder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int qty = dataHandlerDB.getTotalQty();
+                if (qty > 0) {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+                    dialog.setCancelable(false);
+                    dialog.setTitle(context.getResources().getString(R.string.confirmation_title));
+                    dialog.setMessage(context.getResources().getString(R.string.reorder_confirmation));
+                    dialog.setPositiveButton(context.getResources().getString(R.string.discard), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            Bundle bundle = new Bundle();
+                            bundle.putBoolean("reorder", true);
+                            // bundle.putString("address_id", orderHistories.get(position).getOrderAddressId());
+                            dataHandlerDB.deleteAddOn();
+                            dataHandlerDB.deleteAllCart();
+                            dataHandlerDB.deleteManageAddOn();
+                            dataHandlerDB.insertReOrderIntoCart(orderHistory.getOrderedProduct());
+                            util.openFragment(context, FragmentsName.CHECKOUT, FragmentsName.CHECKOUT_ID, bundle);
+                        }
+                    })
+                            .setNegativeButton(context.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Action for "Cancel".
+                                }
+                            });
+
+                    final AlertDialog alert = dialog.create();
+                    alert.show();
+                } else {
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean("reorder", true);
+                    dataHandlerDB.insertReOrderIntoCart(orderHistory.getOrderedProduct());
+                    util.openFragment(context, FragmentsName.CHECKOUT, FragmentsName.CHECKOUT_ID, bundle);
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return orderHistories.size();
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView mCustomerName, mOrderId, mOrderDate, mOrderPrice, txtOrderStatus;
+        private CardView orderHistoryListLayout;
+        private Button btnReorder;
+
+        public MyViewHolder(View itemView) {
+            super(itemView);
+
+            orderHistoryListLayout = (CardView) itemView.findViewById(R.id.orderHistoryListLayout);
+            mCustomerName = (TextView) itemView.findViewById(R.id.txtOrderHistpryCustomerNameListItem);
+            mOrderDate = (TextView) itemView.findViewById(R.id.txtOrderHistoryDateListItem);
+            mOrderPrice = (TextView) itemView.findViewById(R.id.orderHistory_price);
+            mOrderId = (TextView) itemView.findViewById(R.id.orderHistpry_id);
+            txtOrderStatus = (TextView) itemView.findViewById(R.id.orderHistoryStatusListItem);
+
+            btnReorder = (Button) itemView.findViewById(R.id.btnReorderListItem);
+
+        }
+    }
+}

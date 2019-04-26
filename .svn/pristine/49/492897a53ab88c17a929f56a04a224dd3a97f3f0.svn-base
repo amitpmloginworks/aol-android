@@ -1,0 +1,14 @@
+package com.loginworks.aol.aol_native.services;
+
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public interface WebServiceTask {
+    void onComplete(JSONArray jsonArray);
+
+    void onComplete(JSONObject jsonObject);
+
+    void onComplete(String string);
+}
+

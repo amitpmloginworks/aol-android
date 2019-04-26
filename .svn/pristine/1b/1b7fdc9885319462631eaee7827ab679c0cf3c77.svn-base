@@ -1,0 +1,183 @@
+package com.loginworks.aol.aol_native.adapters;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.loginworks.aol.aol_native.R;
+import com.loginworks.aol.aol_native.databasehandler.DataHandlerDB;
+import com.loginworks.aol.aol_native.extras.Appstatus;
+import com.loginworks.aol.aol_native.extras.Const;
+import com.loginworks.aol.aol_native.extras.FragmentsName;
+import com.loginworks.aol.aol_native.extras.JsonRequestAll;
+import com.loginworks.aol.aol_native.extras.MyPreferences;
+import com.loginworks.aol.aol_native.extras.ProgressDialogUtils;
+import com.loginworks.aol.aol_native.extras.ServiceURL;
+import com.loginworks.aol.aol_native.models.Address;
+import com.loginworks.aol.aol_native.services.WebServiceAbstract;
+import com.loginworks.aol.aol_native.services.WebServiceClient;
+import com.loginworks.aol.aol_native.utility.Util;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+/**
+ * Created by Ashish Verma on 4/24/2017.
+ */
+
+public class AddressAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private String TAG = getClass().getSimpleName();
+    private Activity contextl;
+    private ArrayList<Address> addressArrayList;
+    private LayoutInflater layoutInflater;
+    private Util util;
+    private MyPreferences myPreferences;
+    private DataHandlerDB dataHandlerDB;
+    private LinearLayout ll_no_adderess;
+    private RecyclerView addressRecycler;
+
+    public AddressAdapter(Activity context, ArrayList<Address> addressArrayList, LinearLayout ll_no_adderess, RecyclerView addressRecycler) {
+        this.contextl = context;
+        this.addressArrayList = addressArrayList;
+        layoutInflater = LayoutInflater.from(context);
+        util = Util.getInstance();
+        this.ll_no_adderess = ll_no_adderess;
+        this.addressRecycler = addressRecycler;
+        myPreferences = MyPreferences.getInstance();
+        dataHandlerDB = DataHandlerDB.getInstance();
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        View view = layoutInflater.inflate(R.layout.delivery_address_list_item, parent, false);
+        return new AddressHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+
+        AddressHolder addressHolder = (AddressHolder) holder;
+        Address address = addressArrayList.get(position);
+
+        addressHolder.txtName.setText(address.getName());
+        addressHolder.txtAddress1.setText(address.getHouse_no() + ", " + address.getStreet());
+        addressHolder.txtAddress2.setText(address.getCity());
+        addressHolder.txtAddress3.setText(address.getPincode());
+        addressHolder.txtMobile.setText(address.getDelivery_phone());
+
+        addressHolder.btnSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("address_id", addressArrayList.get(position).getId());
+                util.openFragment(contextl, FragmentsName.CONFIRM_ORDER, FragmentsName.CONFIRM_ORDER_ID, bundle);
+            }
+        });
+
+        addressHolder.imgDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hitDeleteAddress(contextl, Const.APP_ID, addressArrayList.get(position).getId(), position);
+
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return addressArrayList.size();
+    }
+
+    private void hitDeleteAddress(final Activity mActivity, String appId, String addressId, final int position) {
+
+        try {
+            if (Appstatus.getInstance(mActivity).isOnline()) {
+                ProgressDialogUtils.startProgressBar(mActivity, contextl.getResources().getString(R.string.pleasewait));
+
+                final JSONObject jsonObj = JsonRequestAll.createJsonParamsDeleteAddress(appId, addressId);
+                Log.e(TAG + " DELETE REQUEST :: ", jsonObj + "");
+
+                final WebServiceAbstract webServiceAbstract = new WebServiceAbstract() {
+                    @Override
+                    public void onComplete(JSONObject jsonObject) {
+                        try {
+                            if (jsonObject != null) {
+                                Log.e(TAG, jsonObject.toString());
+                                afterResponseOTP(mActivity, jsonObject, position);
+                            } else {
+                                Toast.makeText(mActivity, contextl.getResources().getString(R.string.unabletoproceed), Toast.LENGTH_SHORT).show();
+                            }
+                            ProgressDialogUtils.stopProgress();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                };
+
+                WebServiceClient.callPOSTService(ServiceURL.DELETE_ADDRESS, jsonObj, Const.JSON_OBJECT_RESPONSE,
+                        myPreferences.getAolToken(mActivity), webServiceAbstract, Request.Method.POST);
+
+            } else {
+                Toast.makeText(mActivity, contextl.getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+                //ProgressDialogUtils.stopProgress();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void afterResponseOTP(Activity mActivity, JSONObject jsonObject, int position) {
+
+        try {
+            if (jsonObject.getInt("status") == 1) {
+                Toast.makeText(contextl, contextl.getResources().getString(R.string.address_deleted), Toast.LENGTH_SHORT).show();
+                boolean result = dataHandlerDB.deleteAddress(addressArrayList.get(position).getId());
+                addressArrayList.remove(position);
+                if (addressArrayList.size() == 0) {
+                    addressRecycler.setVisibility(View.GONE);
+                    ll_no_adderess.setVisibility(View.VISIBLE);
+                }
+                notifyDataSetChanged();
+            } else {
+                Toast.makeText(contextl, contextl.getResources().getString(R.string.address_not_found), Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public class AddressHolder extends RecyclerView.ViewHolder {
+
+        private TextView txtName, txtAddress1, txtAddress2, txtAddress3, txtMobile;
+        private ImageView imgDelete;
+        private Button btnSelect;
+
+        public AddressHolder(View itemView) {
+            super(itemView);
+
+            txtName = (TextView) itemView.findViewById(R.id.delivery_customer_name);
+            txtAddress1 = (TextView) itemView.findViewById(R.id.delivery_address);
+            txtAddress2 = (TextView) itemView.findViewById(R.id.delivery_city);
+            txtAddress3 = (TextView) itemView.findViewById(R.id.delivery_pincode);
+            txtMobile = (TextView) itemView.findViewById(R.id.delivery_mobile);
+
+            imgDelete = (ImageView) itemView.findViewById(R.id.delete_address);
+
+            btnSelect = (Button) itemView.findViewById(R.id.delivery_procedd_btn);
+
+        }
+    }
+}

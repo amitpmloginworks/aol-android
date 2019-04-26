@@ -1,0 +1,395 @@
+package com.loginworks.royaldines.adapters;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.loginworks.royaldines.R;
+import com.loginworks.royaldines.activity.DashboardActivity;
+import com.loginworks.royaldines.databasehandler.DataHandlerDB;
+import com.loginworks.royaldines.extras.Appstatus;
+import com.loginworks.royaldines.extras.Const;
+import com.loginworks.royaldines.extras.FragmentsName;
+import com.loginworks.royaldines.extras.JsonRequestAll;
+import com.loginworks.royaldines.extras.MyPreferences;
+import com.loginworks.royaldines.extras.ProgressDialogUtils;
+import com.loginworks.royaldines.extras.ServiceURL;
+import com.loginworks.royaldines.fragments.CheckOutFragment;
+import com.loginworks.royaldines.models.AddOn;
+import com.loginworks.royaldines.models.Food;
+import com.loginworks.royaldines.services.WebServiceAbstract;
+import com.loginworks.royaldines.services.WebServiceClient;
+import com.loginworks.royaldines.utility.CartItem;
+import com.loginworks.royaldines.utility.CartItemIMPL;
+import com.loginworks.royaldines.utility.CartRefresh;
+import com.loginworks.royaldines.utility.CartRefreshIMPL;
+import com.loginworks.royaldines.utility.Util;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+
+public class CheckOutCartAdapter extends RecyclerView.Adapter<CheckOutCartAdapter.CartHolder> {
+
+    public static TextView tv_item_count, tv_total;
+    private DataHandlerDB dataHandlerDB;
+    private ArrayList<Food> cartArrayList;
+    private Context context;
+    private AlertDialog mAlertDailog;
+    private RecyclerView rv_addOn;
+    private LinearLayout ll_total_cart;
+    private ImageView iv_addon_close;
+    private boolean reorder_page = false;
+    private MyPreferences myPreferences;
+
+    public CheckOutCartAdapter(Context context, ArrayList<Food> cartArrayList, boolean reorder_page) {
+        this.context = context;
+        this.cartArrayList = cartArrayList;
+        this.reorder_page = reorder_page;
+        dataHandlerDB = DataHandlerDB.getInstance();
+        myPreferences = MyPreferences.getInstance();
+    }
+
+    @Override
+    public CartHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.checkout_cart_list_item, parent, false);
+        return new CartHolder(itemView);
+    }
+
+    @Override
+    public void onBindViewHolder(final CartHolder holder, final int position) {
+        try {
+            final Food food = cartArrayList.get(position);
+            holder.setData(food, position);
+            holder.setListeners();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return cartArrayList.size();
+    }
+
+    private void refreshCheckOutAmount() {
+        CartRefresh cartRefresh = new CartRefreshIMPL();
+        cartRefresh.setCartAmt(CheckOutFragment.tv_check_amount);
+    }
+
+    private void refreshAddOnUI(Context context, String id, RecyclerView recyclerView) {
+        CartItem cartItem = new CartItemIMPL();
+        cartItem.setCheckOutAddOn(context, id, recyclerView);
+    }
+
+    private void refreshUI() {
+        CartRefresh cartRefresh = new CartRefreshIMPL();
+        cartRefresh.setCartAmt(CheckOutCartAdapter.tv_total);
+        cartRefresh.setCartQty(CheckOutCartAdapter.tv_item_count);
+    }
+
+    private void hitAddOnTask(final Activity mActivity, String branchId, String categoryId, final String productId) {
+        try {
+            ProgressDialogUtils.startProgressBar(mActivity, mActivity.getResources().getString(R.string.pleasewait));
+            JSONObject setRequestDelivery = JsonRequestAll.setRequestAddOn(branchId, categoryId, productId);
+            Log.e("ADDON REQUEST", setRequestDelivery.toString());
+
+            WebServiceAbstract webServiceAbstract = new WebServiceAbstract() {
+                @Override
+                public void onComplete(JSONObject jsonObject) {
+                    try {
+                        if (jsonObject != null) {
+                            ProgressDialogUtils.stopProgress();
+                            afterResponse(productId, jsonObject);
+                            Log.e("ADDON RESPONSE", jsonObject.toString());
+                        } else {
+                            ProgressDialogUtils.stopProgress();
+                            //     Toast.makeText(activity, getString(R.string.try_again), Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            };
+
+            WebServiceClient.callPOSTService(ServiceURL.ADDONS, setRequestDelivery,
+                    Const.JSON_OBJECT_RESPONSE, myPreferences.getAolToken(mActivity), webServiceAbstract, Request.Method.POST);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            ProgressDialogUtils.stopProgress();
+        }
+    }
+
+    private void afterResponse(String productid, JSONObject jsonObject) {
+        try {
+            AddOn addOn = new AddOn(productid, jsonObject);
+            if (addOn.isStatus()) {
+                handleSuccess(addOn);
+            } else {
+                handleFailure(addOn.getMessage());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleFailure(String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleSuccess(AddOn addOn) {
+
+        ArrayList<AddOn> addOnArrayList = addOn.getAddOnArrayList();
+
+        if (addOnArrayList != null && addOnArrayList.size() > 0) {
+            if (mAlertDailog != null)
+                mAlertDailog.show();
+            ManageAddOnAdapter addOnAdapter = new ManageAddOnAdapter(context, addOnArrayList);
+
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(context);
+            rv_addOn.setLayoutManager(mLayoutManager);
+            rv_addOn.setAdapter(addOnAdapter);
+        }
+    }
+
+    public class CartHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private ImageView checkout_product_image;
+        private TextView tv_checkout_food_name, tv_checkout_price, tv_checkout_food_counter, tv_checkout_addon;
+        private ImageView iv_checkout_close, iv_checkout_minus, iv_checkout_plus;
+        private LinearLayout ll_checkout_addon;
+        private RecyclerView rv_checkout_addon;
+        private int position;
+
+        public CartHolder(View itemView) {
+            super(itemView);
+            checkout_product_image = (ImageView) itemView.findViewById(R.id.iv_checkout_food);
+            tv_checkout_food_name = (TextView) itemView.findViewById(R.id.tv_checkout_food_name);
+            tv_checkout_price = (TextView) itemView.findViewById(R.id.tv_checkout_price);
+            tv_checkout_food_counter = (TextView) itemView.findViewById(R.id.tv_checkout_food_counter);
+            tv_checkout_addon = (TextView) itemView.findViewById(R.id.tv_checkout_addon);
+            iv_checkout_close = (ImageView) itemView.findViewById(R.id.iv_checkout_close);
+            iv_checkout_minus = (ImageView) itemView.findViewById(R.id.iv_checkout_minus);
+            iv_checkout_plus = (ImageView) itemView.findViewById(R.id.iv_checkout_plus);
+            ll_checkout_addon = (LinearLayout) itemView.findViewById(R.id.ll_checkout_addon);
+            rv_checkout_addon = (RecyclerView) itemView.findViewById(R.id.rv_checkout_addon);
+        }
+
+        protected void setListeners() throws Exception {
+            iv_checkout_close.setOnClickListener(CartHolder.this);
+            iv_checkout_minus.setOnClickListener(CartHolder.this);
+            iv_checkout_plus.setOnClickListener(CartHolder.this);
+            tv_checkout_addon.setOnClickListener(CartHolder.this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.iv_checkout_close:
+                    boolean result = dataHandlerDB.deleteCartProduct(cartArrayList.get(position).getProduct_id());
+                    if (result) {
+                        dataHandlerDB.deleteAddOnProductWise(cartArrayList.get(position).getProduct_id());
+                        cartArrayList.remove(position);
+                        refreshCheckOutAmount();
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, cartArrayList.size());
+
+                        int totoal_Qty = dataHandlerDB.getTotalQty();
+                        if (totoal_Qty == 0) {
+                            int fragmentCount = DashboardActivity.fragmentManager.getBackStackEntryCount();
+                            if (fragmentCount == 1) {
+                                Activity activity = (Activity) context;
+                                if (activity != null) {
+                                    activity.finish();
+                                }
+                            } else {
+                                Util.getInstance().openFragment(context, FragmentsName.FRAGMENT_CATEGORIES, FragmentsName.CATEGORIES_ID, null);
+                            }
+                        }
+                    }
+                    break;
+                case R.id.iv_checkout_minus:
+
+                    int minusCounter = Integer.parseInt(tv_checkout_food_counter.getText().toString());
+                    minusCounter--;
+                    tv_checkout_food_counter.setText(minusCounter + "");
+
+                    if (tv_checkout_food_counter.getText().equals("0")) {
+                        dataHandlerDB.insertCartData(cartArrayList.get(position),
+                                tv_checkout_food_counter.getText().toString());
+
+                        dataHandlerDB.deleteAddOnProductWise(cartArrayList.get(position).getProduct_id());
+                        cartArrayList.remove(position);
+                        refreshCheckOutAmount();
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, cartArrayList.size());
+                        //notifyDataSetChanged();
+
+                        int totoal_Qty = dataHandlerDB.getTotalQty();
+                        if (totoal_Qty == 0) {
+
+                            //DashboardActivity.fragmentManager.popBackStack();
+                            Util.getInstance().openFragment(context, FragmentsName.FRAGMENT_CATEGORIES, FragmentsName.CATEGORIES_ID, null);
+                        }
+                        return;
+                    }
+
+                    dataHandlerDB.insertCartData(cartArrayList.get(position),
+                            tv_checkout_food_counter.getText().toString());
+
+                    refreshCheckOutAmount();
+
+                    break;
+                case R.id.iv_checkout_plus:
+
+                    int plusCounter = Integer.parseInt(tv_checkout_food_counter.getText().toString());
+                    plusCounter++;
+                    tv_checkout_food_counter.setText(plusCounter + "");
+
+                    dataHandlerDB.insertCartData(cartArrayList.get(position),
+                            tv_checkout_food_counter.getText().toString());
+
+                    refreshCheckOutAmount();
+
+                    break;
+                case R.id.tv_checkout_addon:
+
+                    AlertDialog.Builder mAlertBuilder = new AlertDialog.Builder(context);
+
+                    if (mAlertDailog == null) {
+                        Activity mActivity = (Activity) context;
+                        LayoutInflater inflater = mActivity.getLayoutInflater();
+                        View dialogView = inflater.inflate(R.layout.addon_dialog, null);
+                        mAlertBuilder.setView(dialogView);
+
+                        mAlertBuilder.setCancelable(true);
+                        mAlertDailog = mAlertBuilder.create();
+                        rv_addOn = (RecyclerView) dialogView.findViewById(R.id.rv_addon_food);
+                        iv_addon_close = (ImageView) dialogView.findViewById(R.id.addon_close);
+                        ll_total_cart = (LinearLayout) dialogView.findViewById(R.id.ll_total_cart);
+
+                        ll_total_cart.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (mAlertDailog != null) {
+                                    mAlertDailog.dismiss();
+                                }
+                                refreshAddOnUI(context, cartArrayList.get(position).getProduct_id(), rv_checkout_addon);
+                                refreshCheckOutAmount();
+                            }
+                        });
+
+                        iv_addon_close.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (mAlertDailog != null) {
+                                    mAlertDailog.dismiss();
+                                }
+                                refreshAddOnUI(context, cartArrayList.get(position).getProduct_id(), rv_checkout_addon);
+                                refreshCheckOutAmount();
+                            }
+                        });
+
+                        tv_item_count = (TextView) dialogView.findViewById(R.id.tv_item_count);
+                        tv_total = (TextView) dialogView.findViewById(R.id.tv_total);
+
+                        tv_item_count.setText(dataHandlerDB.getTotalQty() + "");
+                        tv_total.setText("SR " + dataHandlerDB.getTotalAmount() + " /-");
+
+                        ArrayList<AddOn> addOnArrayList = dataHandlerDB.getManageAddon(cartArrayList.get(position).getProduct_id());
+
+                        mAlertDailog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialogInterface) {
+                                mAlertDailog = null;
+                            }
+                        });
+
+                        if (addOnArrayList != null && addOnArrayList.size() > 0) {
+                            if (mAlertDailog != null)
+                                mAlertDailog.show();
+                            ManageAddOnAdapter addOnAdapter = new ManageAddOnAdapter(mActivity, addOnArrayList);
+
+                            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(context);
+                            rv_addOn.setLayoutManager(mLayoutManager);
+                            rv_addOn.setAdapter(addOnAdapter);
+                        } else {
+                            if (Appstatus.getInstance(mActivity).isOnline()) {
+                                hitAddOnTask(mActivity, myPreferences.getBranchId(mActivity),
+                                        cartArrayList.get(position).getCategory_id(), cartArrayList.get(position).getProduct_id());
+                            } else {
+                                Toast.makeText(mActivity, mActivity.getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+
+        protected void setData(Food food, int position) throws Exception {
+            this.position = position;
+
+            tv_checkout_food_name.setText(food.getProduct_name());
+            tv_checkout_price.setText("SR " + food.getAmount() + " /-");
+
+            int product_qty = dataHandlerDB.cartProductQty(food.getProduct_id());
+            tv_checkout_food_counter.setText(String.valueOf(product_qty));
+
+            Glide.with(context)
+                    .load(ServiceURL.BASE_IMAGE_PATH + ServiceURL.PRODUCT_IMAGE_PATH + food.getProduct_img())
+                    .placeholder(R.mipmap.placeholder_img)
+                    .fitCenter()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .error(R.mipmap.placeholder_img)
+                    .into(checkout_product_image);
+
+            //checking any product is exists or not
+            if (reorder_page) {
+                boolean exists = dataHandlerDB.addOnExists(food.getProduct_id());
+                if (exists) {
+                    ll_checkout_addon.setVisibility(View.VISIBLE);
+                    tv_checkout_addon.setVisibility(View.VISIBLE);
+                    CartItem cartItem = new CartItemIMPL();
+                    cartItem.setCheckOutAddOn(context, food.getProduct_id(), rv_checkout_addon);
+                } else {
+                    ll_checkout_addon.setVisibility(View.GONE);
+                    tv_checkout_addon.setVisibility(View.GONE);
+                }
+            } else {
+                boolean manageAddonExits = dataHandlerDB.manageAddOnExists(food.getProduct_id());
+                if (manageAddonExits) {
+                    ll_checkout_addon.setVisibility(View.VISIBLE);
+                    tv_checkout_addon.setVisibility(View.VISIBLE);
+
+                    CartItem cartItem = new CartItemIMPL();
+                    cartItem.setCheckOutAddOn(context, food.getProduct_id(), rv_checkout_addon);
+                } else {
+                    boolean addOnExists = dataHandlerDB.addOnExists(food.getProduct_id());
+                    if (addOnExists) {
+                        ll_checkout_addon.setVisibility(View.VISIBLE);
+                        tv_checkout_addon.setVisibility(View.VISIBLE);
+                    } else {
+                        ll_checkout_addon.setVisibility(View.GONE);
+                        tv_checkout_addon.setVisibility(View.GONE);
+                    }
+                }
+            }
+        }
+
+    }
+}

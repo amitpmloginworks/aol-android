@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:text="Add User"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="6dp"
+        android:background="@drawable/custom_edittext3"
+        android:gravity="start"
+        android:maxLines="3"
+        android:hint="@string/enter_user_name"
+        android:inputType="textMultiLine|textCapSentences"
+        android:padding="6dp"
+        android:textSize="14sp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:weightSum="2"
+        android:orientation="horizontal">
+
+
+        <EditText
+            android:id="@+id/edit_contry"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/custom_edittext3"
+            android:gravity="center"
+            android:text="+966"
+            android:editable="false"
+            android:focusable="false"
+            android:clickable="false"
+            android:paddingLeft="5dp"
+            android:maxLength="12"
+            android:layout_weight="0.5"
+            android:inputType="number"
+            android:textSize="14sp" />
+
+
+        <EditText
+            android:id="@+id/edit_mobile"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/custom_edittext3"
+            android:gravity="center"
+            android:maxLength="9"
+            android:layout_weight="1.5"
+            android:hint="@string/enter_user_mobile"
+            android:inputType="number"
+            android:padding="6dp"
+            android:textSize="14sp" />
+
+
+
+    </LinearLayout>
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/btnSubmitUserName"
+            style="@style/AlertDialog.AppCompat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:text="Submit"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

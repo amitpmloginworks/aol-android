@@ -1,0 +1,269 @@
+package com.loginworks.aol.aol_native.fragments;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.loginworks.aol.aol_native.R;
+import com.loginworks.aol.aol_native.activity.DashboardActivity;
+import com.loginworks.aol.aol_native.databasehandler.DataHandlerDB;
+import com.loginworks.aol.aol_native.extras.Appstatus;
+import com.loginworks.aol.aol_native.extras.Const;
+import com.loginworks.aol.aol_native.extras.FragmentsName;
+import com.loginworks.aol.aol_native.extras.JsonRequestAll;
+import com.loginworks.aol.aol_native.extras.MyPreferences;
+import com.loginworks.aol.aol_native.extras.ProgressDialogUtils;
+import com.loginworks.aol.aol_native.extras.ServiceURL;
+import com.loginworks.aol.aol_native.models.DeliveryDetail;
+import com.loginworks.aol.aol_native.models.Food;
+import com.loginworks.aol.aol_native.services.WebServiceAbstract;
+import com.loginworks.aol.aol_native.services.WebServiceClient;
+import com.loginworks.aol.aol_native.utility.CartItem;
+import com.loginworks.aol.aol_native.utility.CartItemIMPL;
+import com.loginworks.aol.aol_native.utility.CartRefresh;
+import com.loginworks.aol.aol_native.utility.CartRefreshIMPL;
+import com.loginworks.aol.aol_native.utility.Util;
+
+import org.json.JSONObject;
+
+/**
+ * Created by abc on 17-Apr-17.
+ */
+
+public class CheckOutFragment extends Fragment implements View.OnClickListener {
+
+    public static TextView tv_check_amount;
+    private Activity mActivity;
+    private RecyclerView rv_checkout_cart;
+    private Button btn_ChekOut;
+    private Util util;
+    private Food food;
+    private MyPreferences myPreferences;
+    private AlertDialog mAlertDailog;
+    private DataHandlerDB dataHandlerDB;
+    private TextView tvTitle;
+    private SearchView searchView;
+    private ImageView iv_Location;
+    private ImageView imv_editOrder;
+    private boolean reorder_page = false;
+    private RelativeLayout ll_Cart;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_check_out, container, false);
+
+        mActivity = getActivity();
+        util = Util.getInstance();
+        myPreferences = MyPreferences.getInstance();
+        dataHandlerDB = DataHandlerDB.getInstance();
+
+        findViews(view);
+        setViews();
+
+        myPreferences.setReorder(mActivity, false);
+
+        return view;
+    }
+
+    private void findViews(View view) {
+        DashboardActivity.toolbar.setVisibility(View.VISIBLE);
+
+        rv_checkout_cart = (RecyclerView) view.findViewById(R.id.rv_checkout_cart);
+        tv_check_amount = (TextView) view.findViewById(R.id.tv_check_amount);
+        btn_ChekOut = (Button) view.findViewById(R.id.btn_CheckOut);
+        btn_ChekOut.setOnClickListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        DashboardActivity.toolbar.setVisibility(View.VISIBLE);
+        tvTitle = ((DashboardActivity) mActivity).txt_Title;
+        searchView = ((DashboardActivity) mActivity).searchview;
+        iv_Location = ((DashboardActivity) mActivity).imv_location;
+        ll_Cart = ((DashboardActivity) mActivity).ll_cart;
+        imv_editOrder = ((DashboardActivity) mActivity).imv_editOrder;
+        ll_Cart.setVisibility(View.GONE);
+        searchView.setVisibility(View.GONE);
+        iv_Location.setVisibility(View.GONE);
+        tvTitle.setText(getResources().getString(R.string.cart));
+        tvTitle.setVisibility(View.VISIBLE);
+        imv_editOrder.setVisibility(View.GONE);
+    }
+
+    private void setViews() {
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            reorder_page = bundle.getBoolean("reorder");
+        }
+
+        CartItem cartItem = new CartItemIMPL();
+        cartItem.setCartItem(mActivity, rv_checkout_cart, reorder_page);
+
+        CartRefresh cartRefresh = new CartRefreshIMPL();
+        cartRefresh.setCartAmt(tv_check_amount);
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_CheckOut:
+                hitDeliveryTask(mActivity, myPreferences.getBranchId(mActivity));
+                break;
+        }
+    }
+
+    private void hitDeliveryTask(final Activity mActivity, String branchId) {
+        try {
+            if (Appstatus.getInstance(mActivity).isOnline()) {
+
+                ProgressDialogUtils.startProgressBar(mActivity, getResources().getString(R.string.pleasewait));
+                JSONObject setRequestDelivery = JsonRequestAll.setRequestDeliveryDetails(branchId);
+                Log.e("Delivery REQUEST", setRequestDelivery.toString());
+
+                WebServiceAbstract webServiceAbstract = new WebServiceAbstract() {
+                    @Override
+                    public void onComplete(JSONObject jsonObject) {
+                        try {
+                            if (jsonObject != null) {
+                                afterResponse(jsonObject);
+                                Log.e("Delivery RESPONSE", jsonObject.toString());
+                            } else {
+                                Toast.makeText(mActivity, getResources().getString(R.string.tryagain), Toast.LENGTH_SHORT).show();
+                            }
+                            ProgressDialogUtils.stopProgress();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                };
+
+                WebServiceClient.callPOSTService(ServiceURL.DELIVERY_DETAILS, setRequestDelivery,
+                        Const.JSON_OBJECT_RESPONSE, myPreferences.getAolToken(mActivity), webServiceAbstract, Request.Method.POST);
+
+            } else {
+                Toast.makeText(mActivity, getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+                ProgressDialogUtils.stopProgress();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void afterResponse(JSONObject jsonObject) {
+        try {
+            DeliveryDetail deliveryDetail = new DeliveryDetail(jsonObject);
+            ProgressDialogUtils.stopProgress();
+            if (deliveryDetail.getMessage().equalsIgnoreCase("Success")) {
+                handleSuccess(deliveryDetail);
+            } else {
+                handleFailure(deliveryDetail.getMessage());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleFailure(String message) {
+        Toast.makeText(mActivity, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleSuccess(final DeliveryDetail deliveryDetail) {
+
+        if (deliveryDetail.getHomeDelivery().equalsIgnoreCase("1") && deliveryDetail.getTakeAway().equalsIgnoreCase("1")) {
+
+            myPreferences.setOtpSupport(mActivity, deliveryDetail.getOtpFailContact());
+
+            AlertDialog.Builder mAlertBuilder = new AlertDialog.Builder(mActivity);
+            LayoutInflater inflater = mActivity.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.delivery_dialog, null);
+            mAlertBuilder.setView(dialogView);
+
+            mAlertBuilder.setCancelable(true);
+
+            mAlertDailog = mAlertBuilder.create();
+            LinearLayout llTakeAway = (LinearLayout) dialogView.findViewById(R.id.ll_takeaway);
+            LinearLayout llHomedelivery = (LinearLayout) dialogView.findViewById(R.id.ll_homedelivery);
+
+            myPreferences.setServiceCharge(mActivity, deliveryDetail.getServiceCharge());
+            myPreferences.setPackingCharge(mActivity, deliveryDetail.getPackCharge());
+            myPreferences.setTaxStatus(mActivity, deliveryDetail.isTaxStaus());
+            Log.e("Tax Staus:::", myPreferences.isTaxStatus(mActivity) + "");
+            myPreferences.setVatTaxValue(mActivity, deliveryDetail.getVatValue());
+            myPreferences.setServiceTaxValue(mActivity, deliveryDetail.getServiceTaxValue());
+
+            llTakeAway.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    myPreferences.setTakeAway(mActivity, "1");
+                    myPreferences.setHomeDelivery(mActivity, "0");
+
+                    //Bundle bundle = new Bundle();
+                    // bundle.putString("page", "checkout");
+                    if (myPreferences.getSession(mActivity)) {
+                        util.openFragment(mActivity, FragmentsName.CONFIRM_ORDER, FragmentsName.CONFIRM_ORDER_ID, null);
+                    } else {
+                        util.openFragment(mActivity, FragmentsName.OTP, FragmentsName.OTP_ID, null);
+                    }
+                    if (mAlertDailog != null && mAlertDailog.isShowing())
+                        mAlertDailog.dismiss();
+                }
+            });
+
+            llHomedelivery.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    try {
+                        int totalAmount = dataHandlerDB.getTotalAmount();
+
+                        int min_order = Integer.parseInt(myPreferences.getMinOrder(mActivity));
+                        if (min_order > totalAmount) {
+                            Toast.makeText(mActivity, getResources().getString(R.string.min_order_one) + (min_order - totalAmount) + getResources().getString(R.string.min_order_two), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    myPreferences.setHomeDelivery(mActivity, "1");
+                    myPreferences.setTakeAway(mActivity, "0");
+
+                    //   Bundle bundle = new Bundle();
+                    //  bundle.putString("page", "checkout");
+                    if (myPreferences.getSession(mActivity)) {
+                        if (dataHandlerDB.getAddress().size() > 0) {
+                            util.openFragment(mActivity, FragmentsName.CUSTOMER_DELIVERY_ADDRESS, FragmentsName.CUSTOMER_DELIVERY_ADDRESS_ID, null);
+                        } else {
+                            util.openFragment(mActivity, FragmentsName.ADD_ADDRESS, FragmentsName.ADD_ADDRESS_ID, null);
+                        }
+                    } else {
+                        util.openFragment(mActivity, FragmentsName.OTP, FragmentsName.OTP_ID, null);
+                    }
+                    if (mAlertDailog != null && mAlertDailog.isShowing())
+                        mAlertDailog.dismiss();
+                }
+            });
+            if (mAlertDailog != null && !mAlertDailog.isShowing())
+                mAlertDailog.show();
+        }
+    }
+}

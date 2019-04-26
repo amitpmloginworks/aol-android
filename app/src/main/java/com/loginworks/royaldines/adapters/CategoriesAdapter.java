@@ -1,0 +1,120 @@
+package com.loginworks.royaldines.adapters;
+
+        import android.app.Activity;
+        import android.content.Context;
+        import android.os.Bundle;
+        import android.support.v7.widget.CardView;
+        import android.support.v7.widget.RecyclerView;
+        import android.util.DisplayMetrics;
+        import android.util.Log;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.ImageView;
+        import android.widget.LinearLayout;
+        import android.widget.TextView;
+
+        import com.bumptech.glide.Glide;
+        import com.bumptech.glide.load.engine.DiskCacheStrategy;
+        import com.loginworks.royaldines.R;
+        import com.loginworks.royaldines.extras.Const;
+        import com.loginworks.royaldines.extras.FragmentsName;
+        import com.loginworks.royaldines.extras.ServiceURL;
+        import com.loginworks.royaldines.models.CategoriesModel;
+        import com.loginworks.royaldines.utility.Util;
+
+        import java.util.ArrayList;
+
+/**
+ * Created by Ashish Verma on 4/4/2017.
+ */
+
+public class CategoriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private Context mContext;
+    private ArrayList<CategoriesModel> listCategories;
+
+    private LayoutInflater inflater;
+    private int height, width;
+    private Util util;
+
+    public CategoriesAdapter(Context context, ArrayList<CategoriesModel> listCategories) {
+        this.mContext = context;
+        this.listCategories = listCategories;
+        inflater = LayoutInflater.from(context);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        height = displayMetrics.heightPixels;
+        width = displayMetrics.widthPixels;
+
+        Log.e("Screen Height-width", height + " - " + width);
+
+        util = Util.getInstance();
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        View view = inflater.inflate(R.layout.categories_list_item, parent, false);
+        CategoriesHolder holder = new CategoriesHolder(view);
+
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+
+        CategoriesHolder categoriesHolder = (CategoriesHolder) holder;
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, width * 2 / 3);
+        categoriesHolder.mCardView.setLayoutParams(params);
+
+        final CategoriesModel categoriesModel = listCategories.get(position);
+
+        categoriesHolder.txtCategoryName.setText(categoriesModel.getName());
+        categoriesHolder.txtCategpryDesc.setText(categoriesModel.getDescription());
+
+        /*Glide.with(mContext).load(ServiceURL.BASE_IMAGE_PATH + categoriesModel.getImagepath())
+        .into(categoriesHolder.imgCategory);*/
+
+        Glide.with(mContext)
+                .load(ServiceURL.BASE_IMAGE_PATH + categoriesModel.getImagepath())
+                .placeholder(R.mipmap.placeholder_img)
+                .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .error(R.mipmap.placeholder_img)
+                .into(categoriesHolder.imgCategory);
+
+        categoriesHolder.mCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putString(Const.CATEGORY_KEY, listCategories.get(position).getCatid());
+                util.openFragment(mContext, FragmentsName.FRAGMENT_FOOD, FragmentsName.FOOD_ID, bundle);
+            }
+        });
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return listCategories.size();
+    }
+
+    public class CategoriesHolder extends RecyclerView.ViewHolder {
+
+        private CardView mCardView;
+        private TextView txtCategoryName, txtCategpryDesc;
+        private ImageView imgCategory;
+
+        public CategoriesHolder(View itemView) {
+            super(itemView);
+            mCardView = (CardView) itemView.findViewById(R.id.categories_cardView);
+            txtCategoryName = (TextView) itemView.findViewById(R.id.txtCategoryNameListItem);
+            txtCategpryDesc = (TextView) itemView.findViewById(R.id.txtCategoryDesc_ListItem);
+            imgCategory = (ImageView) itemView.findViewById(R.id.imgCategory_ListItem);
+        }
+    }
+
+}

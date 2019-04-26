@@ -1,0 +1,183 @@
+package com.loginworks.royaldines.models;
+
+import org.json.JSONObject;
+
+/**
+ * Created by abc on 31-May-17.
+ */
+
+public class Paytm {
+
+    private String mid;
+    private String orderid;
+    private String txnamount;
+    private String currency;
+    private String txnid;
+    private String banktxnid;
+    private String status;
+    private String respcode;
+    private String respmsg;
+    private String txndate;
+    private String gatewayname;
+    private String bankname;
+    private String paymentmode;
+    private String checksumhash;
+
+    public Paytm(JSONObject jsonObject) {
+        try {
+            if (jsonObject.has("MID")) {
+                setMid(jsonObject.getString("MID"));
+            }
+            if (jsonObject.has("ORDERID")) {
+                setOrderid(jsonObject.getString("ORDERID"));
+            }
+            if (jsonObject.has("TXNAMOUNT")) {
+                setTxnamount(jsonObject.getString("TXNAMOUNT"));
+            }
+            if (jsonObject.has("CURRENCY")) {
+                setCurrency(jsonObject.getString("CURRENCY"));
+            }
+            if (jsonObject.has("TXNID")) {
+                setTxnid(jsonObject.getString("TXNID"));
+            }
+            if (jsonObject.has("BANKTXNID")) {
+                setBanktxnid(jsonObject.getString("BANKTXNID"));
+            }
+            if (jsonObject.has("STATUS")) {
+                setStatus(jsonObject.getString("STATUS"));
+            }
+            if (jsonObject.has("RESPCODE")) {
+                setRespcode(jsonObject.getString("RESPCODE"));
+            }
+            if (jsonObject.has("RESPMSG")) {
+                setRespmsg(jsonObject.getString("RESPMSG"));
+            }
+            if (jsonObject.has("TXNDATE")) {
+                setTxndate(jsonObject.getString("TXNDATE"));
+            }
+            if (jsonObject.has("GATEWAYNAME")) {
+                setGatewayname(jsonObject.getString("GATEWAYNAME"));
+            }
+            if (jsonObject.has("BANKNAME")) {
+                setBankname(jsonObject.getString("BANKNAME"));
+            }
+            if (jsonObject.has("PAYMENTMODE")) {
+                setPaymentmode(jsonObject.getString("PAYMENTMODE"));
+            }
+            if (jsonObject.has("CHECKSUMHASH")) {
+                setChecksumhash(jsonObject.getString("CHECKSUMHASH"));
+            }
+
+        } catch (Exception ex) {
+
+        }
+    }
+
+    private void setBanktxnid(String banktxnid) {
+        this.banktxnid = banktxnid;
+    }
+
+    public String getMid() {
+        return mid;
+    }
+
+    private void setMid(String mid) {
+        this.mid = mid;
+    }
+
+    public String getOrderid() {
+        return orderid;
+    }
+
+    private void setOrderid(String orderid) {
+        this.orderid = orderid;
+    }
+
+    public String getTxnamount() {
+        return txnamount;
+    }
+
+    private void setTxnamount(String txnamount) {
+        this.txnamount = txnamount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    private void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getTxnid() {
+        return txnid;
+    }
+
+    private void setTxnid(String txnid) {
+        this.txnid = txnid;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    private void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRespcode() {
+        return respcode;
+    }
+
+    private void setRespcode(String respcode) {
+        this.respcode = respcode;
+    }
+
+    public String getRespmsg() {
+        return respmsg;
+    }
+
+    private void setRespmsg(String respmsg) {
+        this.respmsg = respmsg;
+    }
+
+    public String getTxndate() {
+        return txndate;
+    }
+
+    private void setTxndate(String txndate) {
+        this.txndate = txndate;
+    }
+
+    public String getGatewayname() {
+        return gatewayname;
+    }
+
+    private void setGatewayname(String gatewayname) {
+        this.gatewayname = gatewayname;
+    }
+
+    public String getBankname() {
+        return bankname;
+    }
+
+    private void setBankname(String bankname) {
+        this.bankname = bankname;
+    }
+
+    public String getPaymentmode() {
+        return paymentmode;
+    }
+
+    private void setPaymentmode(String paymentmode) {
+        this.paymentmode = paymentmode;
+    }
+
+    public String getChecksumhash() {
+        return checksumhash;
+    }
+
+    private void setChecksumhash(String checksumhash) {
+        this.checksumhash = checksumhash;
+    }
+}
